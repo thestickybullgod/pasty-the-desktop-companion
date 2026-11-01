@@ -164,6 +164,39 @@ public partial class PastyAvatar : UserControl
         BatWings.ScaleY = 1 - 0.65 * p.BatFlap;
     }
 
+    /// <summary>
+    /// The whole character, centred in a <paramref name="width"/>×<paramref name="height"/> image with
+    /// <paramref name="padding"/> (fraction of the height) above and below. Used for Store tiles.
+    /// </summary>
+    public static Bitmap RenderFullBody(int width, int height, double padding = 0.12, Season season = Season.None)
+    {
+        var avatar = new PastyAvatar { Season = season };
+        var art = (Control)avatar.Content!;
+        avatar.Content = null;
+        // Artwork spans x 8–132 and y 5–183 (cap to shadow); fit that box.
+        const double artLeft = 8, artTop = 5, artWidth = 124, artHeight = 178;
+        var scale = Math.Min(height * (1 - 2 * padding) / artHeight, width * (1 - 2 * padding) / artWidth);
+        var offsetX = (width - artWidth * scale) / 2;
+        var offsetY = (height - artHeight * scale) / 2;
+        art.RenderTransformOrigin = RelativePoint.TopLeft;
+        art.RenderTransform = new TransformGroup
+        {
+            Children =
+            {
+                new TranslateTransform(-artLeft, -artTop),
+                new ScaleTransform(scale, scale),
+                new TranslateTransform(offsetX, offsetY),
+            },
+        };
+        var frame = new Canvas { Width = width, Height = height, ClipToBounds = true, Children = { art } };
+        frame.Measure(new Size(width, height));
+        frame.Arrange(new Rect(0, 0, width, height));
+
+        var bitmap = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
+        bitmap.Render(frame);
+        return bitmap;
+    }
+
     /// <summary>A square portrait (cap, eyes, top of the body) for tray and window icons.</summary>
     public static Bitmap RenderPortrait(int size, Season season = Season.None)
     {

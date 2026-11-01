@@ -23,7 +23,9 @@ public partial class App : Application
             // Pasty has entered the chat.
             var store = new SettingsStore(Path.Combine(SettingsStore.DefaultDirectory, "settings.json"));
             _companion = new PastyCompanion(store, PlatformServices.Create());
-            _companion.Start(launchedAtStartup: desktop.Args?.Contains(Program.StartupArgument) == true);
+                        var atStartup = desktop.Args?.Contains(Program.StartupArgument) == true
+                || (OperatingSystem.IsWindows() && WindowsPlatform.LaunchedByStartupTask());
+            _companion.Start(launchedAtStartup: atStartup);
 
             SingleInstance.Summoned += message =>
             {

@@ -50,15 +50,15 @@ files, cursor or screen. It respects Snooze, Quiet mode and full-screen hiding, 
 ## Install
 
 ### Windows 10 / 11
-Download `Pasty-1.1.0-win-x64.zip` (or `win-arm64`), extract anywhere, run `Pasty.exe`.
+Download `Pasty-1.1.1-win-x64.zip` (or `win-arm64`), extract anywhere, run `Pasty.exe`.
 No installer and no admin rights needed. Turn on *Start with Windows* in Settings if you'd like.
 
 ### Linux
-Download `Pasty-1.1.0-linux-x64.tar.gz` (or `linux-arm64`), then:
+Download `Pasty-1.1.1-linux-x64.tar.gz` (or `linux-arm64`), then:
 
 ```sh
-tar -xzf Pasty-1.1.0-linux-x64.tar.gz
-cd Pasty-1.1.0-linux-x64
+tar -xzf Pasty-1.1.1-linux-x64.tar.gz
+cd Pasty-1.1.1-linux-x64
 ./install.sh            # per-user install, no root; ./install.sh --uninstall to remove
 ```
 
@@ -106,11 +106,16 @@ Requires the .NET 10 SDK.
 ```sh
 dotnet build                      # build everything
 dotnet test                       # run the test suite
-dotnet run --project src/Pasty.Desktop
+dotnet run --project src/Pasty.Desktop -f net10.0-windows10.0.19041.0   # Linux: -f net10.0
 pwsh packaging/publish.ps1        # release packages for Windows + Linux into ./dist
+pwsh packaging/windows/build-msix.ps1 -Test   # Microsoft Store (MSIX) test build; see the script for Store builds
 ```
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how the pieces fit together.
+
+## Privacy
+
+Pasty collects nothing and has no telemetry. See [PRIVACY.md](PRIVACY.md) for exactly what stays on your computer and what an optional AI brain receives.
 
 ## License
 

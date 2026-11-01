@@ -23,7 +23,8 @@ foreach ($rid in $Runtimes) {
     $out = Join-Path $dist "staging/$rid"
     Remove-Item -Recurse -Force $out -ErrorAction SilentlyContinue
     # Self-contained single file: nothing to install, no .NET runtime needed.
-    dotnet publish $project -c Release -r $rid -o $out --nologo -v quiet --self-contained `
+    $tfm = if ($rid -like 'win-*') { 'net10.0-windows10.0.19041.0' } else { 'net10.0' }
+    dotnet publish $project -c Release -f $tfm -r $rid -o $out --nologo -v quiet --self-contained `
         -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
     if ($LASTEXITCODE -ne 0) { throw "Publish failed for $rid" }
     # Debug symbols (including native ones from NuGet packages) don't belong in a release download.
@@ -32,6 +33,7 @@ foreach ($rid in $Runtimes) {
     Copy-Item (Join-Path $root 'README.md') $out
     Copy-Item (Join-Path $root 'RELEASE_NOTES.md') $out
     Copy-Item (Join-Path $root 'LICENSE') $out
+    Copy-Item (Join-Path $root 'PRIVACY.md') $out
     $name = "Pasty-$version-$rid"
 
     if ($rid -like 'win-*') {

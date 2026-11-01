@@ -19,6 +19,13 @@ internal static class Program
             IconExporter.Export(args.ElementAtOrDefault(export + 1) ?? "icons");
             return 0;
         }
+        var storeAssets = Array.IndexOf(args, IconExporter.StoreAssetsArgument);
+        if (storeAssets >= 0)
+        {
+            BuildAvaloniaApp().SetupWithoutStarting();
+            IconExporter.ExportStoreAssets(args.ElementAtOrDefault(storeAssets + 1) ?? "store-assets");
+            return 0;
+        }
 
         // One Pasty per desktop. Launching again just asks the running one to come say hi.
         if (SingleInstance.TrySummonExisting(args.Contains(SettingsArgument) ? "settings" : "summon"))

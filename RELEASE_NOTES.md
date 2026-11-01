@@ -1,3 +1,14 @@
+# Pasty the Desktop Companion 1.1.1
+
+**Getting ready for the Microsoft Store.**
+
+- **Microsoft Store packaging (MSIX)** for x64 and ARM64, with Store tiles and logos rendered from Pasty's own artwork.
+- **Start with Windows works in the Store version.** Store installs use Windows' startup task (also visible under Settings → Apps → Startup); the GitHub download keeps using the registry as before.
+- **`pasty` command:** the Store version can be started from Run or a terminal with `pasty` (or `pasty --settings`).
+- **Privacy policy** added: [PRIVACY.md](PRIVACY.md). Pasty collects nothing.
+- Shutdown logging is quieter: it records only Pasty's own windows and shutdown reasons.
+
+---
 # Pasty the Desktop Companion 1.1.0
 
 **More brains, and you can see what you type.**

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  MSIX manifest template for Pasty the Desktop Companion. build-msix.ps1 fills in the $(...) values;
+  the Identity values must match the product reserved in Partner Center exactly.
+-->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap5 desktop rescap">
+
+  <Identity Name="$(IdentityName)" Publisher="$(Publisher)" Version="$(Version)" ProcessorArchitecture="$(Arch)" />
+
+  <Properties>
+    <DisplayName>Pasty the Desktop Companion</DisplayName>
+    <PublisherDisplayName>$(PublisherDisplayName)</PublisherDisplayName>
+    <Logo>Images\StoreLogo.png</Logo>
+    <Description>Pasty, your desktop companion. Born on Halloween 2026.</Description>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+
+  <Applications>
+    <Application Id="Pasty" Executable="Pasty.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="Pasty the Desktop Companion"
+        Description="Pasty, your desktop companion. Born on Halloween 2026."
+        BackgroundColor="transparent"
+        Square150x150Logo="Images\Square150x150Logo.png"
+        Square44x44Logo="Images\Square44x44Logo.png">
+        <uap:DefaultTile
+          ShortName="Pasty"
+          Wide310x150Logo="Images\Wide310x150Logo.png"
+          Square71x71Logo="Images\Square71x71Logo.png"
+          Square310x310Logo="Images\Square310x310Logo.png">
+          <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo" />
+            <uap:ShowOn Tile="wide310x150Logo" />
+            <uap:ShowOn Tile="square310x310Logo" />
+          </uap:ShowNameOnTiles>
+        </uap:DefaultTile>
+      </uap:VisualElements>
+
+      <Extensions>
+        <!-- "Start with Windows" for the Store version; off until the user turns it on. -->
+        <desktop:Extension Category="windows.startupTask" Executable="Pasty.exe" EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask TaskId="PastyStartup" Enabled="false" DisplayName="Pasty the Desktop Companion" />
+        </desktop:Extension>
+        <!-- Lets "pasty" (with or without its settings switch) work from Run or a terminal. -->
+        <uap5:Extension Category="windows.appExecutionAlias" Executable="Pasty.exe" EntryPoint="Windows.FullTrustApplication">
+          <uap5:AppExecutionAlias>
+            <uap5:ExecutionAlias Alias="pasty.exe" />
+          </uap5:AppExecutionAlias>
+        </uap5:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <!-- Only used when the user picks an AI brain. -->
+    <Capability Name="internetClient" />
+    <!-- A classic desktop app: transparent always-on-top window, tray icon, opt-in OS awareness. -->
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

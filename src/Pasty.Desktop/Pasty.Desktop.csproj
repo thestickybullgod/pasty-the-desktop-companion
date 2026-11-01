@@ -3,15 +3,22 @@
   <PropertyGroup>
     <!-- WinExe: no console window on Windows. On Linux this is an ordinary executable. -->
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
+    <!--
+      net10.0: Linux (and any OS). net10.0-windows: Windows builds, adding WinRT APIs for the
+      Microsoft Store package (startup task, launch detection). Same code; Windows-only parts are #if'd.
+    -->
+    <TargetFrameworks>net10.0;net10.0-windows10.0.19041.0</TargetFrameworks>
+    <SupportedOSPlatformVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.17763.0</SupportedOSPlatformVersion>
+    <!-- Lets Linux/macOS machines build the Windows target too. -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>Pasty</AssemblyName>
     <RootNamespace>Pasty.Desktop</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <Version>1.1.0</Version>
-    <InformationalVersion>1.1.0</InformationalVersion>
+    <Version>1.1.1</Version>
+    <InformationalVersion>1.1.1</InformationalVersion>
     <Product>Pasty the Desktop Companion</Product>
     <AssemblyTitle>Pasty the Desktop Companion</AssemblyTitle>
     <Description>Pasty the Desktop Companion. Born on Halloween 2026.</Description>

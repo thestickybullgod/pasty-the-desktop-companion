@@ -24,6 +24,37 @@ internal static class IconExporter
         }
     }
 
+    public const string StoreAssetsArgument = "--export-store-assets";
+
+    /// <summary>
+    /// <c>Pasty --export-store-assets &lt;dir&gt;</c>: every logo and tile the MSIX manifest references,
+    /// at the scales Windows picks from. Small sizes use the head portrait (readable at 16 px);
+    /// tiles show the whole character.
+    /// </summary>
+    public static void ExportStoreAssets(string directory)
+    {
+        Directory.CreateDirectory(directory);
+        int[] scales = [100, 200, 400];
+
+        foreach (var scale in scales)
+        {
+            int Px(int size) => size * scale / 100;
+            Save(PastyAvatar.RenderPortrait(Px(50)), Path.Combine(directory, $"StoreLogo.scale-{scale}.png"));
+            Save(PastyAvatar.RenderPortrait(Px(44)), Path.Combine(directory, $"Square44x44Logo.scale-{scale}.png"));
+            Save(PastyAvatar.RenderFullBody(Px(71), Px(71)), Path.Combine(directory, $"Square71x71Logo.scale-{scale}.png"));
+            Save(PastyAvatar.RenderFullBody(Px(150), Px(150)), Path.Combine(directory, $"Square150x150Logo.scale-{scale}.png"));
+            Save(PastyAvatar.RenderFullBody(Px(310), Px(150)), Path.Combine(directory, $"Wide310x150Logo.scale-{scale}.png"));
+            Save(PastyAvatar.RenderFullBody(Px(310), Px(310)), Path.Combine(directory, $"Square310x310Logo.scale-{scale}.png"));
+        }
+
+        // Taskbar / Start / file icons at exact pixel sizes, with and without the tile plate.
+        foreach (var size in new[] { 16, 24, 32, 48, 256 })
+        {
+            Save(PastyAvatar.RenderPortrait(size), Path.Combine(directory, $"Square44x44Logo.targetsize-{size}.png"));
+            Save(PastyAvatar.RenderPortrait(size), Path.Combine(directory, $"Square44x44Logo.targetsize-{size}_altform-unplated.png"));
+        }
+    }
+
     private static void Save(Bitmap bitmap, string path)
     {
         using var file = File.Create(path);

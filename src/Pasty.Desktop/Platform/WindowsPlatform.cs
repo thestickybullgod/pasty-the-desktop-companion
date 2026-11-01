@@ -17,7 +17,45 @@ internal sealed class WindowsPlatform : IPlatformServices
 
     public bool SupportsActiveAppAwareness => true;
 
-    public IStartupRegistration Startup { get; } = new RunKeyStartup();
+    /// <summary>
+    /// Store (MSIX) installs can't use the Run key: Windows virtualizes registry writes for packaged
+    /// apps, so the entry would silently do nothing. They declare a startup task in the package instead.
+    /// </summary>
+    public IStartupRegistration Startup { get; } =
+#if WINDOWS10_0_17763_0_OR_GREATER
+        IsPackaged && OperatingSystem.IsWindowsVersionAtLeast(10, 0, 17763) ? new PackagedStartupTask() :
+#endif
+        new RunKeyStartup();
+
+    /// <summary>True when running from an MSIX package (e.g. installed from the Microsoft Store).</summary>
+    public static bool IsPackaged
+    {
+        get
+        {
+            const int AppModelErrorNoPackage = 15700;
+            var length = 0;
+            return GetCurrentPackageFullName(ref length, null) != AppModelErrorNoPackage;
+        }
+    }
+
+    /// <summary>True when Windows started Pasty through its packaged startup task (i.e. at sign-in).</summary>
+    public static bool LaunchedByStartupTask()
+    {
+#if WINDOWS10_0_17763_0_OR_GREATER
+        if (!IsPackaged || !OperatingSystem.IsWindowsVersionAtLeast(10, 0, 17763)) return false;
+        try
+        {
+            return Windows.ApplicationModel.AppInstance.GetActivatedEventArgs()?.Kind
+                == Windows.ApplicationModel.Activation.ActivationKind.StartupTask;
+        }
+        catch (Exception ex) when (ex is COMException or InvalidOperationException)
+        {
+            return false;
+        }
+#else
+        return false;
+#endif
+    }
 
     public ISecretStore Secrets { get; } = new DpapiSecretStore();
 
@@ -84,6 +122,36 @@ internal sealed class WindowsPlatform : IPlatformServices
         }
     }
 
+#if WINDOWS10_0_17763_0_OR_GREATER
+    /// <summary>
+    /// The startup task declared in the package manifest (TaskId "PastyStartup"). Users can also
+    /// switch it in Windows Settings → Apps → Startup; when they've disabled it there, Windows won't
+    /// let Pasty re-enable it, and the toggle in Pasty's settings will simply stay off.
+    /// </summary>
+    [SupportedOSPlatform("windows10.0.17763.0")]
+    private sealed class PackagedStartupTask : IStartupRegistration
+    {
+        private const string TaskId = "PastyStartup";
+
+        public bool IsEnabled() => State() is Windows.ApplicationModel.StartupTaskState.Enabled
+            or Windows.ApplicationModel.StartupTaskState.EnabledByPolicy;
+
+        public void Set(bool enabled) => Run(async () =>
+        {
+            var task = await Windows.ApplicationModel.StartupTask.GetAsync(TaskId);
+            if (enabled) await task.RequestEnableAsync();
+            else task.Disable();
+            return 0;
+        });
+
+        private static Windows.ApplicationModel.StartupTaskState State() =>
+            Run(async () => (await Windows.ApplicationModel.StartupTask.GetAsync(TaskId)).State);
+
+        // WinRT async calls run off the UI thread so blocking on them can't deadlock it.
+        private static T Run<T>(Func<Task<T>> work) => Task.Run(work).GetAwaiter().GetResult();
+    }
+#endif
+
     private sealed class DpapiSecretStore : ISecretStore
     {
         private static readonly byte[] Entropy = "Pasty has entered the chat."u8.ToArray();
@@ -115,6 +183,7 @@ internal sealed class WindowsPlatform : IPlatformServices
     [StructLayout(LayoutKind.Sequential)]
     private struct LASTINPUTINFO { public uint cbSize; public uint dwTime; }
 
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] private static extern int GetCurrentPackageFullName(ref int length, char[]? name);
     [DllImport("user32.dll")] private static extern bool GetLastInputInfo(ref LASTINPUTINFO info);
     [DllImport("shell32.dll")] private static extern int SHQueryUserNotificationState(out int state);
     [DllImport("user32.dll")] private static extern bool GetCursorPos(out POINT point);

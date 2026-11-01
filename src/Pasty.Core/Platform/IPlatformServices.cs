@@ -43,6 +43,7 @@ public interface ISecretStore
     /// <summary>One sentence describing how secrets are protected on this OS.</summary>
     string Description { get; }
 
-    string Protect(string secret);
+    /// <param name="slot">Which secret this is (e.g. the provider name), so several can coexist.</param>
+    string Protect(string secret, string slot);
     string? Unprotect(string? protectedSecret);
 }

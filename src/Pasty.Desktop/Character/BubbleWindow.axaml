@@ -38,8 +38,8 @@
                 </Button>
 
                 <Grid x:Name="AskPanel" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,10,6,0" ColumnDefinitions="*,Auto" IsVisible="False">
-                    <TextBox x:Name="AskBox" PlaceholderText="Ask Pasty… (or try /help)" MaxLength="2000" FontSize="13"
-                             Background="White" Foreground="#1F1F1F" BorderBrush="#C9BB80" CornerRadius="6" />
+                    <!-- Colours for every state are set in code (StyleAskBox) so focus can't hide the text. -->
+                    <TextBox x:Name="AskBox" PlaceholderText="Ask Pasty… (or try /help)" MaxLength="2000" FontSize="13" CornerRadius="6" />
                     <Button x:Name="SendButton" Grid.Column="1" Margin="6,0,0,0" Width="34" Height="32" Padding="0"
                             Background="#14A99A" CornerRadius="6" Cursor="Hand" ToolTip.Tip="Send">
                         <Path Data="M 0,0 L 12,6 L 0,12 L 2,6 Z" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center" />

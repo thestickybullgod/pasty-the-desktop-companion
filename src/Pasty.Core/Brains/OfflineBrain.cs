@@ -35,6 +35,8 @@ public sealed class OfflineBrain(PersonalityEngine personality) : IPastyBrain
 
     public string Name => "Offline";
 
+    public string? Model => null;
+
     public bool IsRemote => false;
 
     public Task<Utterance> ReplyAsync(string userText, BrainContext context, CancellationToken cancellationToken)

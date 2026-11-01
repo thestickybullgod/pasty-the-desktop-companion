@@ -1,3 +1,22 @@
+# Pasty the Desktop Companion 1.1.0
+
+**More brains, and you can see what you type.**
+
+- **New AI brains** in Settings → Brain, each with its own model, endpoint and key:
+  - **Ollama**: runs on your PC, no key, nothing leaves your computer. Pasty warms the model up in the background so the first answer isn't slow.
+  - **Copilot (GitHub Models)**, **ChatGPT (OpenAI)**, **Gemini (Google)**
+  - **Custom**: any OpenAI-compatible endpoint (LM Studio, Azure OpenAI / Microsoft Foundry, OpenRouter, Mistral, Groq…)
+- **List models**: asks the provider what's actually available to you.
+- Roleplay actions from smaller models (`*waving*`) now become animations instead of text.
+- **Fixed:** typed text in the ask box was invisible while focused in dark mode.
+- **Fixed:** on Linux, saving a second provider's key no longer overwrites the first in the keyring.
+- Pasty now records why it shut down in `pasty.log`, so it never disappears without a trace.
+- Full product name: **Pasty the Desktop Companion**.
+
+Existing Claude settings migrate automatically.
+
+---
+
 # Pasty 1.0.0: "Halloween Launch" 🎃
 
 *Released October 31, 2026. Pasty has entered the chat.*

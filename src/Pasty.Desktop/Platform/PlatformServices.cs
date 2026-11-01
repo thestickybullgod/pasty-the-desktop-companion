@@ -30,7 +30,7 @@ internal static class PlatformServices
         void IStartupRegistration.Set(bool enabled) { }
 
         string ISecretStore.Description => "Stored in Pasty's settings file, readable only by your user.";
-        string ISecretStore.Protect(string secret) => "plain:" + secret;
+        string ISecretStore.Protect(string secret, string slot) => "plain:" + secret;
         string? ISecretStore.Unprotect(string? s) => s is not null && s.StartsWith("plain:") ? s[6..] : null;
     }
 }

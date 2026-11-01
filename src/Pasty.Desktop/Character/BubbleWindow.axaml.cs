@@ -24,6 +24,7 @@ public partial class BubbleWindow : Window
     public BubbleWindow()
     {
         InitializeComponent();
+        StyleAskBox(spooky: false);
 
         _typewriter.Tick += (_, _) => TypeNext();
         _autoHide.Tick += (_, _) =>
@@ -69,7 +70,34 @@ public partial class BubbleWindow : Window
             foreach (var dot in new[] { Dot1, Dot2, Dot3 })
                 dot.Fill = new SolidColorBrush(Color.Parse(accent));
             SendButton.Background = new SolidColorBrush(Color.Parse(value ? "#FF7A1A" : "#14A99A"));
+            StyleAskBox(value);
         }
+    }
+
+    /// <summary>
+    /// The Fluent theme restyles a TextBox per state (hover, focus) from theme resources, so in dark mode
+    /// a focused box turned dark while its text stayed dark: invisible typing. Pin every state to the
+    /// bubble's own palette instead, whatever the OS theme.
+    /// </summary>
+    private void StyleAskBox(bool spooky)
+    {
+        var (background, focused, text, placeholder, border, borderFocused, selection) = spooky
+            ? ("#2A1F18", "#33261D", "#FFE8CC", "#B89A7A", "#7A4A1C", "#FF8A1C", "#80FF8A1C")
+            : ("#FFFFFF", "#FFFFFF", "#1F1F1F", "#8A8A8A", "#C9BB80", "#14A99A", "#6614A99A");
+
+        IBrush Brush(string color) => new SolidColorBrush(Color.Parse(color));
+        var resources = AskBox.Resources;
+        foreach (var state in new[] { "", "PointerOver", "Focused", "Disabled" })
+        {
+            resources["TextControlBackground" + state] = Brush(state == "Focused" ? focused : background);
+            resources["TextControlForeground" + state] = Brush(text);
+            resources["TextControlPlaceholderForeground" + state] = Brush(placeholder);
+            resources["TextControlBorderBrush" + state] = Brush(state == "Focused" ? borderFocused : border);
+        }
+        resources["TextControlSelectionHighlightColor"] = Brush(selection);
+        AskBox.Foreground = Brush(text);
+        AskBox.CaretBrush = Brush(text);
+        AskBox.SelectionForegroundBrush = Brush(text);
     }
 
     public event EventHandler? FinishedTyping;

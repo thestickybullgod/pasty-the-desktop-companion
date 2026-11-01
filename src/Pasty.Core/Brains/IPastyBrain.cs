@@ -11,6 +11,9 @@ public interface IPastyBrain
 {
     string Name { get; }
 
+    /// <summary>The model in use, or null for brains without one.</summary>
+    string? Model { get; }
+
     /// <summary>True if this brain needs the network. Pasty falls back to offline when it fails.</summary>
     bool IsRemote { get; }
 

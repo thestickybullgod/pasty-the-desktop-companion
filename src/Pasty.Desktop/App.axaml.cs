@@ -32,7 +32,15 @@ public partial class App : Application
             };
             if (desktop.Args?.Contains(Program.SettingsArgument) == true)
                 _companion.OpenSettings();
-            desktop.Exit += (_, _) => _companion.Dispose();
+            desktop.Exit += (_, e) =>
+            {
+                Program.LogInfo($"Exiting (code {e.ApplicationExitCode}).");
+                _companion.Dispose();
+            };
+            // An always-on companion should never vanish silently: record who asked it to leave.
+            desktop.ShutdownRequested += (_, _) => Program.LogInfo("Shutdown requested:\n" + Environment.StackTrace);
+            Avalonia.Controls.Window.WindowClosedEvent.AddClassHandler<Window>((w, _) =>
+                Program.LogInfo($"{w.GetType().Name} closed:\n" + Environment.StackTrace));
         }
 
         base.OnFrameworkInitializationCompleted();

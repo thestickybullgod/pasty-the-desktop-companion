@@ -10,10 +10,11 @@
     <RootNamespace>Pasty.Desktop</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <Version>1.0.0</Version>
-    <InformationalVersion>1.0.0 "Halloween Launch"</InformationalVersion>
-    <Product>Pasty</Product>
-    <Description>Pasty, your desktop companion. Born on Halloween 2026.</Description>
+    <Version>1.1.0</Version>
+    <InformationalVersion>1.1.0</InformationalVersion>
+    <Product>Pasty the Desktop Companion</Product>
+    <AssemblyTitle>Pasty the Desktop Companion</AssemblyTitle>
+    <Description>Pasty the Desktop Companion. Born on Halloween 2026.</Description>
     <ApplicationIcon>..\..\assets\pasty.ico</ApplicationIcon>
     <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
   </PropertyGroup>
@@ -29,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Pasty.Core\Pasty.Core.csproj" />
     <ProjectReference Include="..\Pasty.Brains.Claude\Pasty.Brains.Claude.csproj" />
+    <ProjectReference Include="..\Pasty.Brains.OpenAICompatible\Pasty.Brains.OpenAICompatible.csproj" />
   </ItemGroup>
 
 </Project>

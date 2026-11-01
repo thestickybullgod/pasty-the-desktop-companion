@@ -6,6 +6,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Pasty.Brains.OpenAICompatible;
 using Pasty.Core.Brains;
 using Pasty.Core.Personality;
 using Pasty.Core.Plugins;
@@ -60,8 +61,12 @@ public partial class SettingsWindow : Window
         Bind(SeasonChoice, _draft.Seasonal, v => _draft.Seasonal = (SeasonalMode)v,
             new Choice(SeasonalMode.Auto, "Automatic"), new Choice(SeasonalMode.AlwaysHalloween, "Always Halloween 🎃"),
             new Choice(SeasonalMode.Off, "Off"));
-        Bind(BrainChoice, _draft.Brain, v => _draft.Brain = (BrainKind)v,
-            new Choice(BrainKind.Offline, "Offline (built in)"), new Choice(BrainKind.Claude, "Claude (Anthropic)"));
+        Bind(BrainChoice, _draft.Brain, v =>
+            {
+                _draft.Brain = (BrainKind)v;
+                LoadProvider();
+            },
+            BrainProviders.All.Select(p => new Choice(p.Kind, p.DisplayName)).ToArray());
 
         Nav.ItemsSource = new[]
         {
@@ -89,6 +94,13 @@ public partial class SettingsWindow : Window
 
         PreviewButton.Click += (_, _) => PreviewLine.Text = "“" + _preview.IdleRemark().Text + "”";
         SaveKeyButton.Click += (_, _) => SaveKey();
+        ListModelsButton.Click += async (_, _) => await ListModelsAsync();
+        ModelBox.TextChanged += (_, _) => UpdateProfile(p => p with { Model = Blank(ModelBox.Text) });
+        EndpointBox.TextChanged += (_, _) => UpdateProfile(p => p with { Endpoint = Blank(EndpointBox.Text) });
+        ModelPicker.SelectionChanged += (_, _) =>
+        {
+            if (ModelPicker.SelectedItem is string model) ModelBox.Text = model;
+        };
         TestButton.Click += async (_, _) => await TestBrainAsync();
         OpenFolderButton.Click += (_, _) => OpenPluginFolder();
 
@@ -108,7 +120,7 @@ public partial class SettingsWindow : Window
 
 
         UpdateLabels();
-        UpdateKeyStatus();
+        LoadProvider();
         UpdateDependentState();
         _loading = false;
     }
@@ -155,7 +167,7 @@ public partial class SettingsWindow : Window
 
     private void UpdateDependentState()
     {
-        ClaudeOptions.IsVisible = _draft.Brain == BrainKind.Claude;
+        ProviderOptions.IsVisible = _draft.Brain != BrainKind.Offline;
         var running = _companion.Context.Sources.Where(_companion.Context.IsRunning).Select(s => s.Description).ToList();
         AwarenessStatus.Text = running.Count == 0
             ? "Pasty isn't observing anything. It's just vibing."
@@ -171,23 +183,98 @@ public partial class SettingsWindow : Window
         UpdateDependentState();
     }
 
+    private BrainProvider Provider => BrainProviders.Get(_draft.Brain);
+
+    private static string? Blank(string? text) => string.IsNullOrWhiteSpace(text) ? null : text.Trim();
+
+    /// <summary>Fills the provider-specific cards from the draft's profile for the selected brain.</summary>
+    private void LoadProvider()
+    {
+        var provider = Provider;
+        var profile = _draft.ProfileFor(provider.Kind);
+        var wasLoading = _loading;
+        _loading = true;
+
+        ProviderHeader.Text = provider.DisplayName;
+        ProviderIcon.Text = provider.Kind == BrainKind.Ollama ? "🏠" : "☁️";
+        ProviderDescription.Text = provider.Description;
+        ProviderPrivacy.Text = provider.PrivacyNote;
+
+        EndpointCard.IsVisible = provider.EndpointEditable;
+        EndpointBox.Text = profile.Endpoint ?? "";
+        EndpointBox.PlaceholderText = provider.DefaultEndpoint ?? "https://…/v1";
+
+        ModelBox.Text = profile.Model ?? "";
+        ModelBox.PlaceholderText = provider.DefaultModel ?? "model id";
+        ModelHelp.Text = provider.DefaultModel is { } model
+            ? $"Leave empty for the default ({model}). Model names change often; 'List models' shows what's available to you."
+            : "Required. 'List models' shows what the endpoint offers.";
+        ListModelsButton.IsVisible = provider.IsOpenAiCompatible;
+        ModelPicker.IsVisible = false;
+        ModelPicker.ItemsSource = null;
+
+        KeyCard.IsVisible = provider.NeedsApiKey || provider.Kind == BrainKind.Custom;
+        ApiKeyBox.Text = "";
+        TestResult.Text = "Sends one short message to check everything works.";
+        UpdateKeyStatus();
+
+        _loading = wasLoading;
+        UpdateDependentState();
+    }
+
+    private void UpdateProfile(Func<BrainProfile, BrainProfile> change)
+    {
+        if (_loading || _draft.Brain == BrainKind.Offline) return;
+        _draft.BrainProfiles[_draft.Brain] = change(_draft.ProfileFor(_draft.Brain));
+        QueueApply();
+    }
+
     private void UpdateKeyStatus()
     {
+        var provider = Provider;
         var secrets = _companion.Platform.Secrets;
-        var hasSaved = secrets.Unprotect(_draft.ProtectedApiKey) is not null;
-        var hasEnv = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY"));
+        var hasSaved = secrets.Unprotect(_draft.ProfileFor(provider.Kind).ProtectedApiKey) is not null;
+        var env = provider.ApiKeyEnvironmentVariable;
+        var hasEnv = env is not null && !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(env));
         KeyStatus.Text = hasSaved ? "A key is saved. " + secrets.Description
-            : hasEnv ? "Using the ANTHROPIC_API_KEY environment variable."
-            : "No key yet. Paste one from console.anthropic.com, or set ANTHROPIC_API_KEY. " + secrets.Description;
+            : hasEnv ? $"Using the {env} environment variable."
+            : $"{provider.KeyHelp}" + (env is null ? "" : $" Or set {env}.") + " " + secrets.Description;
     }
 
     private void SaveKey()
     {
         var key = ApiKeyBox.Text?.Trim() ?? "";
-        _draft.ProtectedApiKey = key.Length == 0 ? null : _companion.Platform.Secrets.Protect(key);
+        var protectedKey = key.Length == 0 ? null : _companion.Platform.Secrets.Protect(key, _draft.Brain.ToString());
         ApiKeyBox.Text = "";
+        UpdateProfile(p => p with { ProtectedApiKey = protectedKey });
         UpdateKeyStatus();
-        QueueApply();
+    }
+
+    private async Task ListModelsAsync()
+    {
+        if (PastyCompanion.CreateBrain(_draft, _companion.Platform) is not OpenAICompatibleBrain brain)
+        {
+            TestResult.Text = Provider.NeedsApiKey ? "Save an API key first, then list models." : "Set the endpoint (and a model name) first.";
+            return;
+        }
+
+        ListModelsButton.IsEnabled = false;
+        try
+        {
+            var models = await brain.ListModelsAsync(CancellationToken.None);
+            ModelPicker.ItemsSource = models;
+            ModelPicker.IsVisible = models.Count > 0;
+            TestResult.Text = models.Count > 0 ? $"Found {models.Count} models. Pick one from the list." : "The provider didn't list any models.";
+        }
+        catch (Exception ex)
+        {
+            TestResult.Text = "✖ " + ex.Message;
+        }
+        finally
+        {
+            ListModelsButton.IsEnabled = true;
+            brain.Dispose();
+        }
     }
 
     private async Task TestBrainAsync()
@@ -195,7 +282,9 @@ public partial class SettingsWindow : Window
         var brain = PastyCompanion.CreateBrain(_draft, _companion.Platform);
         if (brain is null)
         {
-            TestResult.Text = "No API key found. Save one above first.";
+            TestResult.Text = Provider.NeedsApiKey
+                ? "No API key found. Save one above first."
+                : "Set the endpoint and model first.";
             return;
         }
 

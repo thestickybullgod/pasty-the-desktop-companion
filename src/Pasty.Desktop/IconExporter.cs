@@ -27,7 +27,7 @@ internal static class IconExporter
     private static void Save(Bitmap bitmap, string path)
     {
         using var file = File.Create(path);
-        bitmap.Save(file);
+        bitmap.Save(file, new PngBitmapEncoderOptions());
     }
 
     /// <summary>A PNG-compressed .ico (supported since Windows Vista) with several sizes.</summary>
@@ -36,7 +36,7 @@ internal static class IconExporter
         var images = IcoSizes.Select(size =>
         {
             using var stream = new MemoryStream();
-            PastyAvatar.RenderPortrait(size, season).Save(stream);
+            PastyAvatar.RenderPortrait(size, season).Save(stream, new PngBitmapEncoderOptions());
             return (size, data: stream.ToArray());
         }).ToList();
 

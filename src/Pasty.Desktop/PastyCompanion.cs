@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using Pasty.Brains.Claude;
+using Pasty.Brains.OpenAICompatible;
 using Pasty.Core;
 using Pasty.Core.Brains;
 using Pasty.Core.Commands;
@@ -128,9 +129,8 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
     public void ApplySettings(PastySettings settings, bool save = true)
     {
         var brainChanged = settings.Brain != _settings.Brain
-            || settings.ClaudeModel != _settings.ClaudeModel
-            || settings.ProtectedApiKey != _settings.ProtectedApiKey
-            || (_conversation.Brain is null) == (settings.Brain == BrainKind.Claude);
+            || settings.ProfileFor(settings.Brain) != _settings.ProfileFor(settings.Brain)
+            || (_conversation.Brain is null) == (settings.Brain != BrainKind.Offline);
 
         // The settings window edits a copy; don't let it roll back state that changed meanwhile.
         if (!ReferenceEquals(settings, _settings))
@@ -151,7 +151,12 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
         UpdateSeason();
 
         if (brainChanged)
+        {
+            (_conversation.Brain as IDisposable)?.Dispose();
             _conversation.Brain = CreateBrain(settings, Platform);
+            if (_conversation.Brain is OpenAICompatibleBrain { IsRemote: false } local)
+                _ = local.WarmUpAsync();
+        }
 
         try
         {
@@ -167,12 +172,29 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
         if (save) _store.Save(settings);
     }
 
+    /// <summary>
+    /// Builds the configured brain, or null when it can't work yet (no key, no model), in which case
+    /// Pasty stays on its offline brain.
+    /// </summary>
     public static IPastyBrain? CreateBrain(PastySettings settings, IPlatformServices platform)
     {
-        if (settings.Brain != BrainKind.Claude) return null;
-        var key = platform.Secrets.Unprotect(settings.ProtectedApiKey)
-            ?? Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY");
-        return string.IsNullOrWhiteSpace(key) ? null : new ClaudeBrain(key, settings.ClaudeModel);
+        var provider = BrainProviders.Get(settings.Brain);
+        if (provider.Kind == BrainKind.Offline) return null;
+
+        var profile = settings.ProfileFor(provider.Kind);
+        var key = platform.Secrets.Unprotect(profile.ProtectedApiKey)
+            ?? (provider.ApiKeyEnvironmentVariable is { } env ? Environment.GetEnvironmentVariable(env) : null);
+        var model = string.IsNullOrWhiteSpace(profile.Model) ? provider.DefaultModel : profile.Model.Trim();
+        var endpoint = string.IsNullOrWhiteSpace(profile.Endpoint) ? provider.DefaultEndpoint : profile.Endpoint.Trim();
+
+        if (provider.NeedsApiKey && string.IsNullOrWhiteSpace(key)) return null;
+        if (string.IsNullOrWhiteSpace(model)) return null;
+
+        if (provider.Kind == BrainKind.Claude)
+            return new ClaudeBrain(key!, model);
+        if (endpoint is null || !Uri.TryCreate(endpoint, UriKind.Absolute, out _))
+            return null;
+        return new OpenAICompatibleBrain(provider.ShortName, endpoint, model, key);
     }
 
     public void OpenSettings()
@@ -281,7 +303,7 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
     {
         Summon();
         _window.Avatar.SetState(PastyState.Listening);
-        _bubble.ShowAsk(_conversation.ActiveBrain.IsRemote
+        _bubble.ShowAsk(_conversation.Brain is not null
             ? "What can I help with?"
             : "What can I help with? (Offline mode: I'm better at banter than answers.)");
     }
@@ -552,9 +574,11 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
             return new Utterance("Done. What were we talking about? Exactly.", PastyReaction.Smug);
         }));
         Commands.Register(new("brain", "Which brain am I using?", _ =>
-            new Utterance(_conversation.ActiveBrain.IsRemote
-                ? $"I'm running on my {_conversation.ActiveBrain.Name} brain ({_settings.ClaudeModel})."
-                : "Offline brain. All charm, no cloud.")));
+            new Utterance(_conversation.Brain is { } brain
+                ? $"I'm running on my {brain.Name} brain ({brain.Model})." + (brain.IsRemote ? "" : " It lives on your computer, like me.")
+                : _settings.Brain == BrainKind.Offline
+                    ? "Offline brain. All charm, no cloud."
+                    : $"I'm set to use {BrainProviders.Get(_settings.Brain).ShortName}, but it's missing a key or model, so you get offline me. Check Settings → Brain.")));
         Commands.Register(new("birthday", "When was I born?", _ =>
             new Utterance(SeasonCalendar.IsHalloweenNight(DateTime.Now)
                 ? "Today! I was born on Halloween 2026. 🎂🎃 Cake would be nice. Tubes can't eat cake. Get the cake anyway."

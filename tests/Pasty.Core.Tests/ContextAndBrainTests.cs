@@ -77,6 +77,7 @@ public class ConversationTests
     private sealed class FailingBrain(Exception error) : IPastyBrain
     {
         public string Name => "Failing";
+        public string? Model => "broken-1";
         public bool IsRemote => true;
         public Task<Utterance> ReplyAsync(string userText, BrainContext context, CancellationToken cancellationToken) => throw error;
         public void ResetConversation() { }

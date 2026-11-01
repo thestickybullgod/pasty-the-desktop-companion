@@ -90,7 +90,8 @@ internal sealed class WindowsPlatform : IPlatformServices
 
         public string Description => "Encrypted with Windows DPAPI; only your Windows account can read it.";
 
-        public string Protect(string secret) =>
+        // Each DPAPI blob is self-contained, so the slot needs no special handling.
+        public string Protect(string secret, string slot) =>
             "dpapi:" + Convert.ToBase64String(ProtectedData.Protect(Encoding.UTF8.GetBytes(secret), Entropy, DataProtectionScope.CurrentUser));
 
         public string? Unprotect(string? protectedSecret)

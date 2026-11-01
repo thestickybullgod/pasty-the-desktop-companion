@@ -24,7 +24,11 @@ public sealed class SettingsStore
         try
         {
             if (File.Exists(FilePath))
-                return JsonSerializer.Deserialize<PastySettings>(File.ReadAllText(FilePath), Json) ?? new();
+            {
+                var settings = JsonSerializer.Deserialize<PastySettings>(File.ReadAllText(FilePath), Json) ?? new();
+                settings.MigrateLegacy();
+                return settings;
+            }
         }
         catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException)
         {

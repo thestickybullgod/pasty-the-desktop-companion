@@ -27,9 +27,9 @@ cp "$HERE/pasty.png" "$ICON_DIR/pasty.png"
 cat > "$DESKTOP_DIR/pasty.desktop" <<EOF
 [Desktop Entry]
 Type=Application
-Name=Pasty
+Name=Pasty the Desktop Companion
 GenericName=Desktop Companion
-Comment=Your desktop companion. Born on Halloween 2026.
+Comment=Pasty, your desktop companion. Born on Halloween 2026.
 Exec="$APP_DIR/Pasty"
 Icon=pasty
 Terminal=false

@@ -1,8 +1,8 @@
-# Pasty 📎🎃
+# Pasty the Desktop Companion 📎🎃
 
 **Your desktop companion. Born on Halloween 2026.**
 
-Pasty is a tube of paste with a screw-cap hat, very expressive eyebrows, and opinions. It's a spiritual
+**Pasty the Desktop Companion** ("Pasty" for short) is a tube of paste with a screw-cap hat, very expressive eyebrows, and opinions. It's a spiritual
 successor to the classic 90s desktop assistant: the one that might have evolved if that idea had
 survived into the modern era. Helpful, nostalgic, slightly obnoxious, technically competent, and
 occasionally sarcastic.
@@ -50,15 +50,15 @@ files, cursor or screen. It respects Snooze, Quiet mode and full-screen hiding, 
 ## Install
 
 ### Windows 10 / 11
-Download `Pasty-1.0.0-win-x64.zip` (or `win-arm64`), extract anywhere, run `Pasty.exe`.
+Download `Pasty-1.1.0-win-x64.zip` (or `win-arm64`), extract anywhere, run `Pasty.exe`.
 No installer and no admin rights needed. Turn on *Start with Windows* in Settings if you'd like.
 
 ### Linux
-Download `Pasty-1.0.0-linux-x64.tar.gz` (or `linux-arm64`), then:
+Download `Pasty-1.1.0-linux-x64.tar.gz` (or `linux-arm64`), then:
 
 ```sh
-tar -xzf Pasty-1.0.0-linux-x64.tar.gz
-cd Pasty-1.0.0-linux-x64
+tar -xzf Pasty-1.1.0-linux-x64.tar.gz
+cd Pasty-1.1.0-linux-x64
 ./install.sh            # per-user install, no root; ./install.sh --uninstall to remove
 ```
 
@@ -83,11 +83,22 @@ Type `/help` in the ask box for commands: `/joke`, `/tip`, `/roll 2d6`, `/flip`,
 
 ## AI brain (optional)
 
-Settings → Brain → **Claude**, then paste an API key from console.anthropic.com (or set
-`ANTHROPIC_API_KEY`). The key is encrypted with DPAPI on Windows, or kept in your desktop keyring on
-Linux when `secret-tool` is available. Only what you type into the ask box is sent; idle remarks,
-pokes, easter eggs and context reactions stay offline.
+Pasty's offline brain is always there. In **Settings → Brain** you can add a smarter one:
 
+| Brain | What you need |
+|---|---|
+| **Ollama** (runs on your PC) | [Ollama](https://ollama.com) and a model (`ollama pull llama3.2`). No key; nothing leaves your computer. |
+| **Claude** (Anthropic) | API key from console.anthropic.com, or `ANTHROPIC_API_KEY` |
+| **Copilot** (GitHub Models) | GitHub token with `models:read`, or `GITHUB_TOKEN` |
+| **ChatGPT** (OpenAI) | API key from platform.openai.com, or `OPENAI_API_KEY` |
+| **Gemini** (Google) | API key from aistudio.google.com, or `GEMINI_API_KEY` |
+| **Custom** | Any OpenAI-compatible endpoint: LM Studio, Azure OpenAI / Microsoft Foundry, OpenRouter, Mistral, Groq… |
+
+Each brain keeps its own model, endpoint and key. **List models** shows what your account or server
+actually offers. Keys are encrypted with DPAPI on Windows, or kept in your desktop keyring on Linux
+when `secret-tool` is available. Only what you type into the ask box is sent; idle remarks, pokes,
+easter eggs and context reactions stay offline. If a brain can't be reached, Pasty says so in
+character and falls back to its offline brain.
 ## Building from source
 
 Requires the .NET 10 SDK.

@@ -16,7 +16,15 @@ public enum BrainKind
 {
     Offline,
     Claude,
+    GitHubModels,
+    OpenAI,
+    Gemini,
+    Ollama,
+    Custom,
 }
+
+/// <summary>Per-provider brain settings. Null fields mean "use the provider's default".</summary>
+public sealed record BrainProfile(string? Model = null, string? Endpoint = null, string? ProtectedApiKey = null);
 
 /// <summary>
 /// Everything the user can configure. Every field that lets Pasty observe the
@@ -51,8 +59,13 @@ public sealed class PastySettings
 
     // Brain
     public BrainKind Brain { get; set; } = BrainKind.Offline;
-    public string ClaudeModel { get; set; } = "claude-opus-5-5";
-    /// <summary>Opaque token from the platform secret store (DPAPI on Windows, keyring on Linux).</summary>
+    /// <summary>Model, endpoint and protected API key for each provider, so switching back and forth keeps your setup.</summary>
+    public Dictionary<BrainKind, BrainProfile> BrainProfiles { get; set; } = [];
+
+    /// <summary>1.0.0 stored the Claude settings flat. Read for migration only; never written.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? ClaudeModel { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? ProtectedApiKey { get; set; }
     /// <summary>When true, the active app's category (never its window title) is included in AI prompts.</summary>
     public bool ShareContextWithAi { get; set; }
@@ -62,5 +75,24 @@ public sealed class PastySettings
 
     public bool FirstRunComplete { get; set; }
 
-    public PastySettings Clone() => (PastySettings)MemberwiseClone();
+    public BrainProfile ProfileFor(BrainKind kind) =>
+        BrainProfiles.TryGetValue(kind, out var profile) ? profile : new BrainProfile();
+
+    /// <summary>Profiles are immutable records, so copying the dictionary is enough for an independent clone.</summary>
+    public PastySettings Clone()
+    {
+        var copy = (PastySettings)MemberwiseClone();
+        copy.BrainProfiles = new Dictionary<BrainKind, BrainProfile>(BrainProfiles);
+        return copy;
+    }
+
+    /// <summary>Moves 1.0.0's flat Claude settings into <see cref="BrainProfiles"/>.</summary>
+    internal void MigrateLegacy()
+    {
+        if (ClaudeModel is null && ProtectedApiKey is null) return;
+        if (!BrainProfiles.ContainsKey(BrainKind.Claude))
+            BrainProfiles[BrainKind.Claude] = new BrainProfile(ClaudeModel, null, ProtectedApiKey);
+        ClaudeModel = null;
+        ProtectedApiKey = null;
+    }
 }

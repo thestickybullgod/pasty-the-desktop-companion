@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Pasty.Brains.Claude/Pasty.Brains.Claude.csproj" />
+    <Project Path="src/Pasty.Brains.OpenAICompatible/Pasty.Brains.OpenAICompatible.csproj" />
     <Project Path="src/Pasty.Core/Pasty.Core.csproj" />
     <Project Path="src/Pasty.Desktop/Pasty.Desktop.csproj" />
   </Folder>

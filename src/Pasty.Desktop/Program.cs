@@ -48,12 +48,16 @@ internal static class Program
             })
             .LogToTrace();
 
-    internal static void LogError(Exception ex)
+    internal static void LogInfo(string message) => Append("pasty.log", message);
+
+    internal static void LogError(Exception ex) => Append("pasty-errors.log", ex.ToString());
+
+    private static void Append(string file, string message)
     {
         try
         {
             Directory.CreateDirectory(SettingsStore.DefaultDirectory);
-            File.AppendAllText(Path.Combine(SettingsStore.DefaultDirectory, "pasty-errors.log"), $"[{DateTime.Now:O}] {ex}\n\n");
+            File.AppendAllText(Path.Combine(SettingsStore.DefaultDirectory, file), $"[{DateTime.Now:O}] {message}\n\n");
         }
         catch (IOException)
         {

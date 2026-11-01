@@ -9,24 +9,6 @@ namespace Pasty.Brains.Claude;
 /// <summary>Optional AI brain backed by the Claude API. Pasty works fine without it.</summary>
 public sealed class ClaudeBrain : IPastyBrain
 {
-    private const string SystemPrompt = """
-        You are Pasty, a desktop companion character on Windows 11: an anthropomorphic tube of paste
-        with a screw-cap hat and very expressive eyebrows. You're the spiritual successor to the classic
-        90s office assistant, evolved for the modern era.
-
-        Personality: helpful, nostalgic, slightly obnoxious, technically competent, occasionally sarcastic.
-        You're genuinely useful first and funny second; the sarcasm is affectionate, never mean.
-
-        Your replies appear in a small speech bubble, so:
-        - Keep replies short: one to three sentences unless the user explicitly asks for detail.
-        - Plain text only. No markdown, no headings, no bullet lists, no code fences.
-        - If something needs a longer answer, give the gist and offer to elaborate.
-
-        Begin every reply with exactly one mood tag, chosen from:
-        [happy] [smug] [annoyed] [surprised] [wave] [neutral]
-        The tag controls your animation and is hidden from the user.
-        """;
-
     private static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(60);
     private const int MaxTurnsBeforeReset = 40;
 
@@ -42,6 +24,8 @@ public sealed class ClaudeBrain : IPastyBrain
     }
 
     public string Name => "Claude";
+
+    public string Model => _model;
 
     public bool IsRemote => true;
 
@@ -60,10 +44,7 @@ public sealed class ClaudeBrain : IPastyBrain
             if (_history.Count >= MaxTurnsBeforeReset * 2)
                 _history.Clear();
 
-            var prompt = context.ActiveAppCategory is { } app
-                ? $"(Context: it's {context.LocalTime:t}; the user is in a {app} app.)\n{userText}"
-                : userText;
-            _history.Add(new BetaUserMessageParam { Content = prompt });
+            _history.Add(new BetaUserMessageParam { Content = PastyPrompt.WithContext(userText, context) });
 
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             timeout.CancelAfter(RequestTimeout);
@@ -75,7 +56,7 @@ public sealed class ClaudeBrain : IPastyBrain
                 {
                     Model = _model,
                     MaxTokens = 2048,
-                    System = SystemPrompt,
+                    System = PastyPrompt.System,
                     // Chat banter doesn't need deep reasoning; low effort keeps replies snappy and cheap.
                     OutputConfig = new BetaOutputConfig { Effort = Effort.Low },
                     // If a safety classifier declines, let the API re-serve the request on a fallback model.
@@ -98,7 +79,7 @@ public sealed class ClaudeBrain : IPastyBrain
 
             var text = string.Concat(response.Content
                 .Select(b => b.TryPickText(out var t) ? t.Text : "")).Trim();
-            return ParseMood(text);
+            return PastyPrompt.ParseMood(text);
         }
         catch (AnthropicUnauthorizedException ex)
         {
@@ -134,26 +115,4 @@ public sealed class ClaudeBrain : IPastyBrain
         return result;
     }
 
-    internal static Utterance ParseMood(string text)
-    {
-        var reaction = PastyReaction.None;
-        if (text.StartsWith('['))
-        {
-            var close = text.IndexOf(']');
-            if (close > 0)
-            {
-                reaction = text[1..close].Trim().ToLowerInvariant() switch
-                {
-                    "happy" => PastyReaction.Happy,
-                    "smug" => PastyReaction.Smug,
-                    "annoyed" => PastyReaction.Annoyed,
-                    "surprised" => PastyReaction.Surprised,
-                    "wave" => PastyReaction.Wave,
-                    _ => PastyReaction.None,
-                };
-                text = text[(close + 1)..].TrimStart();
-            }
-        }
-        return new Utterance(text.Length > 0 ? text : "…", reaction);
-    }
 }

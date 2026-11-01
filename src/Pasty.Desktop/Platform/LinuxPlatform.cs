@@ -205,7 +205,10 @@ internal sealed class LinuxPlatform : IPlatformServices, IDisposable
     private sealed class LinuxSecretStore : ISecretStore
     {
         private const string KeyringMarker = "keyring:pasty";
-        private static readonly string[] Lookup = ["service", "pasty", "account", "api-key"];
+
+        /// <summary>One keyring entry per slot (provider). 1.0.0's single entry had no slot suffix.</summary>
+        private static string[] Lookup(string? slot) =>
+            ["service", "pasty", "account", slot is null ? "api-key" : "api-key-" + slot];
 
         private readonly bool _hasSecretTool = Run("secret-tool", ["--version"], null, out _);
 
@@ -213,17 +216,20 @@ internal sealed class LinuxPlatform : IPlatformServices, IDisposable
             ? "Stored in your desktop keyring (libsecret)."
             : "Stored in Pasty's settings file, readable only by your user. Install libsecret-tools to use your keyring instead.";
 
-        public string Protect(string secret)
+        public string Protect(string secret, string slot)
         {
-            if (_hasSecretTool && Run("secret-tool", ["store", "--label=Pasty API key", .. Lookup], secret, out _))
-                return KeyringMarker;
+            if (_hasSecretTool && Run("secret-tool", ["store", $"--label=Pasty API key ({slot})", .. Lookup(slot)], secret, out _))
+                return KeyringMarker + ":" + slot;
             return "plain:" + secret;
         }
 
         public string? Unprotect(string? protectedSecret)
         {
-            if (protectedSecret == KeyringMarker)
-                return Run("secret-tool", ["lookup", .. Lookup], null, out var output) ? output.Trim() : null;
+            if (protectedSecret is not null && protectedSecret.StartsWith(KeyringMarker))
+            {
+                var slot = protectedSecret.Length > KeyringMarker.Length ? protectedSecret[(KeyringMarker.Length + 1)..] : null;
+                return Run("secret-tool", ["lookup", .. Lookup(slot)], null, out var output) ? output.Trim() : null;
+            }
             return protectedSecret is not null && protectedSecret.StartsWith("plain:") ? protectedSecret[6..] : null;
         }
 

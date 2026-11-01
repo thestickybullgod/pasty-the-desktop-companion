@@ -1,0 +1,55 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Pasty.Desktop.Character.BubbleWindow"
+        Title="Pasty says"
+        SizeToContent="WidthAndHeight" CanResize="False" ShowInTaskbar="False" Topmost="True"
+        WindowDecorations="None" Background="Transparent" TransparencyLevelHint="Transparent"
+        ShowActivated="False">
+    <Window.Resources>
+        <!-- Deliberately the pale "tooltip yellow" of late-90s desktops. Nostalgia is a feature. -->
+        <SolidColorBrush x:Key="BubbleFill" Color="#FFFDE7" />
+        <SolidColorBrush x:Key="BubbleStroke" Color="#B9A867" />
+        <SolidColorBrush x:Key="BubbleText" Color="#2B2B2B" />
+    </Window.Resources>
+
+    <!-- The margin leaves room for the drop shadow inside the transparent window. -->
+    <StackPanel x:Name="Root" Margin="14,12,14,2" MaxWidth="292" Opacity="0">
+        <StackPanel.Transitions>
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.15" />
+            </Transitions>
+        </StackPanel.Transitions>
+
+        <Border x:Name="Card" Background="{StaticResource BubbleFill}" BorderBrush="{StaticResource BubbleStroke}" BorderThickness="1.5"
+                CornerRadius="12" Padding="14,10,8,12" BoxShadow="0 2 12 0 #40000000">
+            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto">
+                <TextBlock x:Name="Message" TextWrapping="Wrap" FontSize="14" LineHeight="20"
+                           Foreground="{StaticResource BubbleText}" Margin="0,2,6,0" />
+
+                <StackPanel x:Name="Dots" Orientation="Horizontal" IsVisible="False" Margin="0,6,0,4" Spacing="5">
+                    <Ellipse x:Name="Dot1" Width="7" Height="7" Fill="#8A7D4A" />
+                    <Ellipse x:Name="Dot2" Width="7" Height="7" Fill="#8A7D4A" />
+                    <Ellipse x:Name="Dot3" Width="7" Height="7" Fill="#8A7D4A" />
+                </StackPanel>
+
+                <Button x:Name="CloseButton" Grid.Column="1" VerticalAlignment="Top" Width="22" Height="22" Padding="0"
+                        Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip.Tip="Dismiss">
+                    <Path x:Name="CloseGlyph" Data="M 0,0 L 8,8 M 8,0 L 0,8" Stroke="#7A6E45" StrokeThickness="1.5" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Button>
+
+                <Grid x:Name="AskPanel" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,10,6,0" ColumnDefinitions="*,Auto" IsVisible="False">
+                    <TextBox x:Name="AskBox" PlaceholderText="Ask Pasty… (or try /help)" MaxLength="2000" FontSize="13"
+                             Background="White" Foreground="#1F1F1F" BorderBrush="#C9BB80" CornerRadius="6" />
+                    <Button x:Name="SendButton" Grid.Column="1" Margin="6,0,0,0" Width="34" Height="32" Padding="0"
+                            Background="#14A99A" CornerRadius="6" Cursor="Hand" ToolTip.Tip="Send">
+                        <Path Data="M 0,0 L 12,6 L 0,12 L 2,6 Z" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Button>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- Tail pointing down at Pasty -->
+        <Path x:Name="Tail" Data="M 0,0 L 18,0 L 4,16 Z" Fill="{StaticResource BubbleFill}" Stroke="{StaticResource BubbleStroke}"
+              StrokeThickness="1.5" HorizontalAlignment="Center" Margin="10,-1.5,0,0" />
+    </StackPanel>
+</Window>

@@ -1,0 +1,299 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:settings="using:Pasty.Core.Settings"
+        x:Class="Pasty.Desktop.SettingsWindow"
+        x:DataType="settings:PastySettings"
+        Title="Pasty Settings" Width="960" Height="700" MinWidth="720" MinHeight="480"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource PastyPageBrush}">
+    <Window.Styles>
+        <!-- Windows 11 settings "card": icon, title + description, control on the right. -->
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="{DynamicResource PastyCardBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource PastyCardStrokeBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="16,12" />
+            <Setter Property="Margin" Value="0,0,0,4" />
+            <Setter Property="MinHeight" Value="68" />
+        </Style>
+
+        <Style Selector="TextBlock.icon">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="2,0,18,0" />
+        </Style>
+        <Style Selector="TextBlock.title">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style Selector="TextBlock.desc">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Foreground" Value="{DynamicResource PastySecondaryTextBrush}" />
+            <Setter Property="Margin" Value="0,2,0,0" />
+        </Style>
+        <Style Selector="TextBlock.section">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,18,0,8" />
+        </Style>
+        <Style Selector="Border.card ToggleSwitch">
+            <Setter Property="OnContent" Value="On" />
+            <Setter Property="OffContent" Value="Off" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Grid.Column" Value="2" />
+            <Setter Property="Margin" Value="12,0,0,0" />
+        </Style>
+    </Window.Styles>
+
+    <Grid x:Name="Shell" ColumnDefinitions="280,*">
+        <!-- Navigation -->
+        <DockPanel Margin="12,14,8,12">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="8,0,0,18">
+                <Image x:Name="Portrait" Width="56" Height="56" />
+                <StackPanel VerticalAlignment="Center" Margin="12,0,0,0">
+                    <TextBlock Text="Pasty" FontSize="18" FontWeight="SemiBold" />
+                    <TextBlock x:Name="Subtitle" Text="Desktop companion" Classes="desc" />
+                </StackPanel>
+            </StackPanel>
+            <ListBox x:Name="Nav" Background="Transparent" />
+        </DockPanel>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Column="1" Padding="24,14,36,24">
+            <StackPanel MaxWidth="1000">
+                <TextBlock x:Name="PageTitle" FontSize="28" FontWeight="SemiBold" Margin="0,4,0,18" />
+
+                <!-- General -->
+                <StackPanel x:Name="GeneralPage">
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="🚀" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" x:Name="StartupTitle" Text="Start when I sign in" />
+                            <TextBlock Classes="desc" Text="Pasty shows up when you log in. Per-user only; no admin rights needed." />
+                        </StackPanel>
+                        <ToggleSwitch IsChecked="{Binding StartWithWindows}" />
+                    </Grid></Border>
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="📌" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Always on top" />
+                            <TextBlock Classes="desc" Text="Keep Pasty above other windows." />
+                        </StackPanel>
+                        <ToggleSwitch IsChecked="{Binding AlwaysOnTop}" />
+                    </Grid></Border>
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="📏" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Size" />
+                            <TextBlock Classes="desc" Text="How big Pasty is on your desktop." />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="12">
+                            <TextBlock x:Name="ScaleLabel" VerticalAlignment="Center" MinWidth="40" TextAlignment="Right" />
+                            <Slider x:Name="ScaleSlider" Width="180" Minimum="0.6" Maximum="2" TickFrequency="0.1" IsSnapToTickEnabled="True" Value="{Binding Scale}" />
+                        </StackPanel>
+                    </Grid></Border>
+
+                    <TextBlock Classes="section" Text="Living together" />
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="🎬" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Hide during full-screen apps" />
+                            <TextBlock Classes="desc" Text="Games, videos and presentations get Pasty-free screens." />
+                        </StackPanel>
+                        <ToggleSwitch IsChecked="{Binding HideWhenFullScreen}" />
+                    </Grid></Border>
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="😴" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Nap when you're away" />
+                            <TextBlock Classes="desc" Text="Pasty dozes off (and goes quiet) after this long without keyboard or mouse input." />
+                        </StackPanel>
+                        <ComboBox x:Name="SleepChoice" Grid.Column="2" Width="190" VerticalAlignment="Center" Margin="12,0,0,0" />
+                    </Grid></Border>
+                </StackPanel>
+
+                <!-- Personality -->
+                <StackPanel x:Name="PersonalityPage">
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="💬" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Chattiness" />
+                            <TextBlock Classes="desc" Text="How often Pasty speaks up without being asked." />
+                        </StackPanel>
+                        <ComboBox x:Name="ChattinessChoice" Grid.Column="2" Width="210" VerticalAlignment="Center" Margin="12,0,0,0" />
+                    </Grid></Border>
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="😏" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Sarcasm" />
+                            <TextBlock Classes="desc" Text="From wholesome helper to the reason you click 'Snooze'." />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="12">
+                            <TextBlock x:Name="SarcasmLabel" VerticalAlignment="Center" MinWidth="80" TextAlignment="Right" />
+                            <Slider x:Name="SarcasmSlider" Width="180" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True" Value="{Binding Sarcasm}" />
+                        </StackPanel>
+                    </Grid></Border>
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="🎃" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Seasonal costumes" />
+                            <TextBlock Classes="desc" Text="Halloween Edition: witch hat, bats, spooky (never scary) lines. Automatic from Oct 15 to Nov 1." />
+                        </StackPanel>
+                        <ComboBox x:Name="SeasonChoice" Grid.Column="2" Width="210" VerticalAlignment="Center" Margin="12,0,0,0" />
+                    </Grid></Border>
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="🌅" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Time-of-day greetings" />
+                            <TextBlock Classes="desc" Text="Uses your computer's clock only." />
+                        </StackPanel>
+                        <ToggleSwitch IsChecked="{Binding TimeOfDayGreetings}" />
+                    </Grid></Border>
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="🔊" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Preview" />
+                            <TextBlock Classes="desc" x:Name="PreviewLine" Text="Hear what Pasty sounds like with these settings." />
+                        </StackPanel>
+                        <Button x:Name="PreviewButton" Grid.Column="2" Content="Say something" VerticalAlignment="Center" Margin="12,0,0,0" />
+                    </Grid></Border>
+                </StackPanel>
+
+                <!-- Awareness & privacy -->
+                <StackPanel x:Name="AwarenessPage">
+                    <Border Classes="card" Background="{DynamicResource PastyInfoBrush}"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="🔒" />
+                        <StackPanel Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center">
+                            <TextBlock Classes="title" FontWeight="SemiBold" Text="Pasty's privacy promise" />
+                            <TextBlock Classes="desc" Text="Everything on this page is off until you turn it on, and Pasty works fully without it. Observations are reduced to a category on the spot (e.g. &quot;code editor&quot;, &quot;a link&quot;): no window titles, no clipboard text, nothing written to disk. Nothing leaves your computer unless you also enable &quot;Share context with AI&quot; on the Brain page." />
+                        </StackPanel>
+                    </Grid></Border>
+
+                    <TextBlock Classes="section" Text="Context-aware remarks" />
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="🪟" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Notice which app I'm using" />
+                            <TextBlock Classes="desc" x:Name="ActiveAppDescription" />
+                        </StackPanel>
+                        <ToggleSwitch x:Name="ActiveAppToggle" IsChecked="{Binding WatchActiveApp}" />
+                    </Grid></Border>
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="📋" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="React when I copy things" />
+                            <TextBlock Classes="desc" x:Name="ClipboardDescription" />
+                        </StackPanel>
+                        <ToggleSwitch IsChecked="{Binding WatchClipboard}" />
+                    </Grid></Border>
+
+                    <TextBlock Classes="section" Text="Right now" />
+                    <Border Classes="card">
+                        <TextBlock x:Name="AwarenessStatus" Classes="desc" FontSize="13" Margin="0" VerticalAlignment="Center" />
+                    </Border>
+                </StackPanel>
+
+                <!-- Brain -->
+                <StackPanel x:Name="BrainPage">
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="🧠" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Brain" />
+                            <TextBlock Classes="desc" Text="Offline is built in and private. An AI brain lets Pasty actually answer questions." />
+                        </StackPanel>
+                        <ComboBox x:Name="BrainChoice" Grid.Column="2" Width="210" VerticalAlignment="Center" Margin="12,0,0,0" />
+                    </Grid></Border>
+
+                    <StackPanel x:Name="ClaudeOptions">
+                        <TextBlock Classes="section" Text="Claude" />
+                        <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                            <TextBlock Classes="icon" Text="🔑" />
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Classes="title" Text="API key" />
+                                <TextBlock Classes="desc" x:Name="KeyStatus" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8" Margin="12,0,0,0">
+                                <TextBox x:Name="ApiKeyBox" Width="240" PasswordChar="●" PlaceholderText="sk-ant-…" />
+                                <Button x:Name="SaveKeyButton" Content="Save" />
+                            </StackPanel>
+                        </Grid></Border>
+                        <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                            <TextBlock Classes="icon" Text="🤖" />
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Classes="title" Text="Model" />
+                                <TextBlock Classes="desc" Text="Claude model ID. Default: claude-opus-5-5." />
+                            </StackPanel>
+                            <TextBox Grid.Column="2" Width="240" VerticalAlignment="Center" Margin="12,0,0,0" Text="{Binding ClaudeModel}" />
+                        </Grid></Border>
+                        <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                            <TextBlock Classes="icon" Text="🤝" />
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Classes="title" Text="Share context with AI" />
+                                <TextBlock Classes="desc" Text="Include the kind of app you're in (e.g. &quot;spreadsheet&quot;) with your questions. Requires app awareness. Clipboard contents are never shared." />
+                            </StackPanel>
+                            <ToggleSwitch IsChecked="{Binding ShareContextWithAi}" />
+                        </Grid></Border>
+                        <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                            <TextBlock Classes="icon" Text="🧪" />
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Classes="title" Text="Test" />
+                                <TextBlock Classes="desc" x:Name="TestResult" Text="Sends one short message to check everything works." />
+                            </StackPanel>
+                            <Button x:Name="TestButton" Grid.Column="2" Content="Test connection" VerticalAlignment="Center" Margin="12,0,0,0" />
+                        </Grid></Border>
+                        <TextBlock Classes="desc" Margin="4,10,0,0"
+                                   Text="With Claude enabled, what you type into Pasty's ask box is sent to Anthropic's API. Idle remarks, pokes, easter eggs and context reactions always stay offline. If the key is missing or the network is down, Pasty falls back to its offline brain." />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Plugins -->
+                <StackPanel x:Name="PluginsPage">
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="🧩" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Load plugins" />
+                            <TextBlock Classes="desc" Text="Load .NET plugin DLLs from Pasty's plugins folder at startup. Plugins run with your permissions; only install ones you trust. Takes effect after restarting Pasty." />
+                        </StackPanel>
+                        <ToggleSwitch IsChecked="{Binding EnableExternalPlugins}" />
+                    </Grid></Border>
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="📁" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Plugins folder" />
+                            <TextBlock Classes="desc" x:Name="PluginFolder" />
+                        </StackPanel>
+                        <Button x:Name="OpenFolderButton" Grid.Column="2" Content="Open folder" VerticalAlignment="Center" Margin="12,0,0,0" />
+                    </Grid></Border>
+                    <TextBlock Classes="section" Text="Commands" />
+                    <Border Classes="card">
+                        <SelectableTextBlock x:Name="CommandList" FontSize="13" FontFamily="Cascadia Mono, DejaVu Sans Mono, Consolas, monospace" VerticalAlignment="Center" />
+                    </Border>
+                </StackPanel>
+
+                <!-- About -->
+                <StackPanel x:Name="AboutPage">
+                    <Border Classes="card">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Pasty" FontSize="20" FontWeight="SemiBold" />
+                            <TextBlock x:Name="VersionText" Classes="desc" />
+                            <TextBlock TextWrapping="Wrap" FontSize="13"
+                                       Text="A desktop companion: the assistant that might have evolved from the classic 90s office helper, had it survived into the modern era. Helpful, nostalgic, slightly obnoxious, technically competent, occasionally sarcastic." />
+                            <TextBlock TextWrapping="Wrap" FontSize="13" FontWeight="SemiBold" Text="🎃 Born on Halloween 2026." />
+                            <TextBlock Classes="desc" FontSize="13"
+                                       Text="Pasty is an original character. All artwork and animation is original vector art; no third-party character assets are used or redistributed." />
+                            <TextBlock Classes="desc" FontSize="13"
+                                       Text="Free software under the GNU GPL, version 3 or later. Comes with ABSOLUTELY NO WARRANTY (not even a warranty that the hat comes off)." />
+                            <TextBlock FontStyle="Italic" Text="Pasty has entered the chat." />
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Classes="section" Text="This computer" />
+                    <Border Classes="card">
+                        <TextBlock x:Name="PlatformInfo" Classes="desc" FontSize="13" Margin="0" VerticalAlignment="Center" />
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

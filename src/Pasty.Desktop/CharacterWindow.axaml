@@ -1,0 +1,13 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:character="using:Pasty.Desktop.Character"
+        x:Class="Pasty.Desktop.CharacterWindow"
+        Title="Pasty"
+        SizeToContent="WidthAndHeight" CanResize="False" ShowInTaskbar="False" Topmost="True"
+        WindowDecorations="None" Background="Transparent" TransparencyLevelHint="Transparent"
+        ShowActivated="False">
+    <LayoutTransformControl x:Name="Scaler">
+        <!-- Headroom above and beside Pasty for hops, leans and waves. -->
+        <character:PastyAvatar x:Name="Avatar" Margin="12,46,12,0" Cursor="Hand" />
+    </LayoutTransformControl>
+</Window>

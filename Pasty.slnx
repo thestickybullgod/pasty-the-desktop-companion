@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Pasty.Brains.Claude/Pasty.Brains.Claude.csproj" />
+    <Project Path="src/Pasty.Core/Pasty.Core.csproj" />
+    <Project Path="src/Pasty.Desktop/Pasty.Desktop.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Pasty.Core.Tests/Pasty.Core.Tests.csproj" />
+  </Folder>
+</Solution>

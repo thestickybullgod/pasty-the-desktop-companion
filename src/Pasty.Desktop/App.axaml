@@ -1,0 +1,31 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Pasty.Desktop.App"
+             Name="Pasty"
+             RequestedThemeVariant="Default">
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <!-- Windows 11 settings palette, light and dark. -->
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="PastyPageBrush" Color="#F3F3F3" />
+                    <SolidColorBrush x:Key="PastyCardBrush" Color="#B3FFFFFF" />
+                    <SolidColorBrush x:Key="PastyCardStrokeBrush" Color="#0F000000" />
+                    <SolidColorBrush x:Key="PastySecondaryTextBrush" Color="#5F5F5F" />
+                    <SolidColorBrush x:Key="PastyInfoBrush" Color="#F4F0FF" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="PastyPageBrush" Color="#202020" />
+                    <SolidColorBrush x:Key="PastyCardBrush" Color="#0DFFFFFF" />
+                    <SolidColorBrush x:Key="PastyCardStrokeBrush" Color="#19000000" />
+                    <SolidColorBrush x:Key="PastySecondaryTextBrush" Color="#C5C5C5" />
+                    <SolidColorBrush x:Key="PastyInfoBrush" Color="#2A2540" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

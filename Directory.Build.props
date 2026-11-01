@@ -1,0 +1,7 @@
+<Project>
+  <!-- Shared metadata for every project in the solution. -->
+  <PropertyGroup>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+    <Copyright>Copyright (C) 2026 The Pasty Authors</Copyright>
+  </PropertyGroup>
+</Project>

@@ -20,6 +20,25 @@ public partial class App : Application
             // Pasty lives in the tray; closing a window never quits it.
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
+            var screenshots = Array.IndexOf(desktop.Args ?? [], StoreScreenshots.Argument);
+            if (screenshots >= 0)
+            {
+                var directory = desktop.Args!.ElementAtOrDefault(screenshots + 1) ?? "store-screenshots";
+                Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
+                {
+                    try
+                    {
+                        await StoreScreenshots.RenderAllAsync(directory);
+                    }
+                    finally
+                    {
+                        desktop.Shutdown();
+                    }
+                });
+                base.OnFrameworkInitializationCompleted();
+                return;
+            }
+
             // Pasty has entered the chat.
             var store = new SettingsStore(Path.Combine(SettingsStore.DefaultDirectory, "settings.json"));
             _companion = new PastyCompanion(store, PlatformServices.Create());

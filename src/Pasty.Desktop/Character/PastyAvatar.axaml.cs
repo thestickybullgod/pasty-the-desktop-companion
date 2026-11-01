@@ -127,6 +127,9 @@ public partial class PastyAvatar : UserControl
         _frameTimer.Interval = TimeSpan.FromSeconds(1.0 / Animator.RecommendedFps);
     }
 
+    /// <summary>Freezes the avatar in a given pose (Store screenshots, previews).</summary>
+    internal void ShowPose(in PastyPose pose) => ApplyPose(pose);
+
     private void ApplyPose(in PastyPose p)
     {
         Squash.ScaleX = p.SquashX;

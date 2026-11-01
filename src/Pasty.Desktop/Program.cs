@@ -27,6 +27,10 @@ internal static class Program
             return 0;
         }
 
+        // Store screenshots need the full app (theme, templates) but not the companion or single-instance check.
+        if (args.Contains(StoreScreenshots.Argument))
+            return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+
         // One Pasty per desktop. Launching again just asks the running one to come say hi.
         if (SingleInstance.TrySummonExisting(args.Contains(SettingsArgument) ? "settings" : "summon"))
             return 0;

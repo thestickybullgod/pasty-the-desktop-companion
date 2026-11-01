@@ -1,3 +1,12 @@
+# Pasty the Desktop Companion 1.1.2
+
+**First Microsoft Store release, published by Planet Archives.**
+
+- Pasty is now published on the Microsoft Store by **Planet Archives**.
+- The Halloween bat has a light outline, so it shows up on dark desktops.
+- Store listing text and screenshots live in `packaging/store/` (screenshots are rendered from Pasty's own artwork with `--render-store-screenshots`).
+
+---
 # Pasty the Desktop Companion 1.1.1
 
 **Getting ready for the Microsoft Store.**

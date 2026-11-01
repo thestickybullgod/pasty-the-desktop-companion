@@ -54,25 +54,89 @@ internal static class StoreScreenshots
     {
         Directory.CreateDirectory(directory);
         foreach (var scene in Scenes)
-        {
-            var content = Build(scene);
-            // A real (off-screen) window gives the controls their theme and templates before rendering.
-            var host = new Window
-            {
-                Width = Width, Height = Height, Content = content, ShowInTaskbar = false, ShowActivated = false,
-                WindowDecorations = WindowDecorations.None, Position = new PixelPoint(-32000, -32000),
-            };
-            host.Show();
-            await Task.Delay(400);
-            content.Measure(new Size(Width, Height));
-            content.Arrange(new Rect(0, 0, Width, Height));
+            await RenderAsync(Build(scene), Width, Height, System.IO.Path.Combine(directory, scene.File));
 
-            using var bitmap = new RenderTargetBitmap(new PixelSize(Width, Height), new Vector(96, 96));
-            bitmap.Render(content);
-            using (var file = File.Create(System.IO.Path.Combine(directory, scene.File)))
-                bitmap.Save(file, new PngBitmapEncoderOptions());
-            host.Close();
-        }
+        // Store key art: 9:16 poster and 1:1 box art, in their own folder next to the screenshots.
+        var art = System.IO.Path.Combine(directory, "..", "art");
+        Directory.CreateDirectory(art);
+        await RenderAsync(BuildKeyArt(1440, 2160), 1440, 2160, System.IO.Path.Combine(art, "poster-art-9x16-1440x2160.png"));
+        await RenderAsync(BuildKeyArt(2160, 2160), 2160, 2160, System.IO.Path.Combine(art, "box-art-1x1-2160x2160.png"));
+    }
+
+    private static async Task RenderAsync(Control content, int width, int height, string path)
+    {
+        // A real (off-screen) window gives the controls their theme and templates before rendering.
+        var host = new Window
+        {
+            Width = width, Height = height, Content = content, ShowInTaskbar = false, ShowActivated = false,
+            WindowDecorations = WindowDecorations.None, Position = new PixelPoint(-32000, -32000),
+        };
+        host.Show();
+        await Task.Delay(400);
+        content.Measure(new Size(width, height));
+        content.Arrange(new Rect(0, 0, width, height));
+
+        using var bitmap = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
+        bitmap.Render(content);
+        using (var file = File.Create(path))
+            bitmap.Save(file, new PngBitmapEncoderOptions());
+        host.Close();
+    }
+
+    /// <summary>
+    /// Poster and box art: the full product name over a large waving Pasty, in the brand colours.
+    /// Everything sits well inside the edges, since the Store crops and overlays key art in places.
+    /// </summary>
+    private static Control BuildKeyArt(int width, int height)
+    {
+        IBrush Solid(string color) => new SolidColorBrush(Color.Parse(color));
+        var unit = Math.Min(width, height) / 1440.0;   // scale type and character with the canvas
+        var portrait = height > width;
+
+        var title = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center, Spacing = 6 * unit };
+        title.Children.Add(new TextBlock { Text = "Pasty", FontSize = 230 * unit, FontWeight = FontWeight.Bold, Foreground = Solid("#123B37"), HorizontalAlignment = HorizontalAlignment.Center });
+        title.Children.Add(new TextBlock { Text = "the Desktop Companion", FontSize = 86 * unit, FontWeight = FontWeight.SemiBold, Foreground = Solid("#1F5E57"), HorizontalAlignment = HorizontalAlignment.Center });
+
+        var avatar = new PastyAvatar { Margin = new Thickness(12, 46, 12, 0), ClipToBounds = false };
+        // Wave, but keep the cap on: at poster size the hat-tip reads as a lid flying off.
+        avatar.ShowPose(PoseFor(PastyReaction.Wave, Season.None) with { CapTilt = 0, CapLift = 0 });
+        var characterScale = (portrait ? 6.4 : 3.9) * unit;
+        var glowSize = (portrait ? 1180 : 1000) * unit;
+
+        var character = new Grid { HorizontalAlignment = HorizontalAlignment.Center };
+        character.Children.Add(new Ellipse
+        {
+            Width = glowSize, Height = glowSize, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center,
+            Fill = new RadialGradientBrush { GradientStops = { new GradientStop(Color.Parse("#CCFFFFFF"), 0), new GradientStop(Color.Parse("#00FFFFFF"), 1) } },
+        });
+        character.Children.Add(new LayoutTransformControl
+        {
+            LayoutTransform = new ScaleTransform(characterScale, characterScale), Child = avatar,
+            HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, ClipToBounds = false,
+        });
+
+        var layout = new StackPanel
+        {
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            Spacing = (portrait ? 40 : 30) * unit,
+        };
+        layout.Children.Add(title);
+        layout.Children.Add(character);
+        if (portrait)
+            layout.Children.Add(new TextBlock { Text = "A desktop buddy with opinions.", FontSize = 58 * unit, Foreground = Solid("#2E4A47"), HorizontalAlignment = HorizontalAlignment.Center });
+
+        return new Grid
+        {
+            Width = width, Height = height,
+            Background = new LinearGradientBrush
+            {
+                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                EndPoint = new RelativePoint(1, 1, RelativeUnit.Relative),
+                GradientStops = { new GradientStop(Color.Parse("#E3F4F1"), 0), new GradientStop(Color.Parse("#FFF6DD"), 1) },
+            },
+            Children = { layout },
+        };
     }
 
     private static Control Build(Scene scene)
@@ -123,16 +187,18 @@ internal static class StoreScreenshots
     }
 
     /// <summary>Plays the animator forward to a flattering moment of the scene's reaction.</summary>
-    private static PastyPose PoseFor(Scene scene)
+    private static PastyPose PoseFor(Scene scene) => PoseFor(scene.Reaction, scene.Season);
+
+    private static PastyPose PoseFor(PastyReaction reaction, Season season)
     {
-        var animator = new PastyAnimator(new Random(7)) { BatEnabled = scene.Season == Season.Halloween };
+        var animator = new PastyAnimator(new Random(7)) { BatEnabled = season == Season.Halloween };
         var step = TimeSpan.FromSeconds(1 / 30.0);
         void Advance(double seconds) { for (var t = 0.0; t < seconds; t += step.TotalSeconds) animator.Update(step); }
 
-        if (scene.Season == Season.Halloween)
+        if (season == Season.Halloween)
             Advance(12.35); // the bat's first flight starts at 12 s; this catches it out beside the hat
-        animator.React(scene.Reaction);
-        Advance(scene.Reaction == PastyReaction.Wave ? 0.75 : 0.9);
+        animator.React(reaction);
+        Advance(reaction == PastyReaction.Wave ? 0.75 : 0.9);
         // Animator.Pose is the pose without a blink in progress.
         return animator.Pose;
     }

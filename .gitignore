@@ -6,3 +6,6 @@ dist/
 .idea/
 *.swp
 TestResults/
+
+# Internal notes for other sessions; not for the public repo
+docs/website-handoff.md

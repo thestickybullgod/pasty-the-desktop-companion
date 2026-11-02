@@ -1,4 +1,4 @@
-# Pasty the Desktop Companion 1.2.0 (in progress)
+# Pasty the Desktop Companion 1.2.0
 
 **A new look, and pick your companion.**
 

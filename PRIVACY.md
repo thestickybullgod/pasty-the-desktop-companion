@@ -1,6 +1,6 @@
 # Privacy Policy: Pasty the Desktop Companion
 
-*Effective October 31, 2026. Published by Planet Archives.*
+*Effective November 2, 2026. Published by Planet Archives.*
 
 Pasty is a desktop companion that runs on your computer. It was designed to work fully offline and to
 observe nothing unless you ask it to. This policy explains exactly what Pasty does with information.
@@ -20,6 +20,7 @@ observe nothing unless you ask it to. This policy explains exactly what Pasty do
 |---|---|---|
 | Your settings (position, size, personality, chosen brain, model names) | `settings.json` in Pasty's app data folder | So Pasty remembers your preferences |
 | AI API keys, if you add one | Encrypted with Windows DPAPI (Windows) or your desktop keyring (Linux), referenced from settings | So Pasty can use the AI provider you chose |
+| Reminders you set | `reminders.json` in the same folder; each one is removed once it has been delivered | So reminders survive a restart |
 | Error and shutdown logs | `pasty-errors.log`, `pasty.log` in the same folder | Troubleshooting; they contain technical details, not your conversations |
 
 These files never leave your computer. Uninstalling Pasty and deleting its app data folder removes them.

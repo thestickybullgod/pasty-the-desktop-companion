@@ -123,6 +123,7 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
 
         // Starting with Windows/login: give the desktop a moment to settle before saying hello.
         var delay = launchedAtStartup ? TimeSpan.FromSeconds(8) : TimeSpan.FromSeconds(0.8);
+        DispatcherTimer.RunOnce(CheckTransparency, delay + TimeSpan.FromSeconds(6));
         DispatcherTimer.RunOnce(() =>
         {
             // Quiet hours: arrive without a word (the first-run welcome still explains the basics).
@@ -134,6 +135,24 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
                 _store.Save(_settings);
             }
         }, delay);
+    }
+
+    /// <summary>
+    /// On X11 a window can only be see-through while a compositor runs. Without one, Avalonia paints
+    /// Pasty's window white, so explain the fix instead of leaving a mystery square on the desktop.
+    /// </summary>
+    private void CheckTransparency()
+    {
+        var level = _window.ActualTransparencyLevel;
+        Program.LogInfo($"Transparency: {level} (renderer: {Environment.GetEnvironmentVariable("PASTY_RENDERING") ?? "software"}, " +
+            $"desktop: {Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP") ?? "?"}, session: {Environment.GetEnvironmentVariable("XDG_SESSION_TYPE") ?? "?"})");
+        if (!OperatingSystem.IsLinux() || level != WindowTransparencyLevel.None) return;
+
+        var mate = (Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP") ?? "").Contains("MATE", StringComparison.OrdinalIgnoreCase);
+        Speak(new Utterance(mate
+            ? "I'm stuck in a white box! Turn on compositing (Control Center → Windows → General → \"Enable software compositing window manager\") and I'll be see-through."
+            : "I'm stuck in a box! Your desktop has no compositor running, so I can't be see-through. Turn on compositing in your window manager's settings.",
+            PastyReaction.Surprised), prompted: true);
     }
 
     /// <summary>Plugin entry point: say something, from any thread.</summary>

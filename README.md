@@ -2,7 +2,7 @@
 
 **Your desktop companion. Born on Halloween 2026.**
 
-**Pasty the Desktop Companion** ("Pasty" for short) is a tube of paste with a screw-cap hat, very expressive eyebrows, and opinions. It's a spiritual
+**Pasty the Desktop Companion** ("Pasty" for short) is an orange glue stick with a snap-on cap, very expressive eyebrows, and opinions. It's a spiritual
 successor to the classic 90s desktop assistant: the one that might have evolved if that idea had
 survived into the modern era. Helpful, nostalgic, slightly obnoxious, technically competent, and
 occasionally sarcastic.
@@ -35,7 +35,7 @@ character assets are used or redistributed.
 - ⌨️ **Ask from anywhere** with a global shortcut (Ctrl+Alt+P by default; Windows).
 - 🐢 **Reduced motion**: follows your system's animation setting, or choose it in Settings.
 - 🧩 **Plugins**: drop-in .NET DLLs can add slash commands (opt-in).
-- 🐧 **Windows and Linux.**
+- 🪟 **Made for Windows 10 and 11**, with an [experimental Linux build](#linux-experimental).
 
 ## 🎃 Halloween Edition
 
@@ -60,7 +60,10 @@ files, cursor or screen. It respects Snooze, Quiet mode and full-screen hiding, 
 Download `Pasty-1.2.0-win-x64.zip` (or `win-arm64`), extract anywhere, run `Pasty.exe`.
 No installer and no admin rights needed. Turn on *Start with Windows* in Settings if you'd like.
 
-### Linux
+### Linux (experimental)
+Pasty is made for Windows. The Linux build is **experimental**: it's provided as-is, gets fixes when they're
+simple, and isn't tested across distributions. Bug reports and pull requests are welcome.
+
 Download `Pasty-1.2.0-linux-x64.tar.gz` (or `linux-arm64`), then:
 
 ```sh
@@ -69,10 +72,17 @@ cd Pasty-1.2.0-linux-x64
 sh install.sh           # per-user install, no root; sh install.sh --uninstall to remove
 ```
 
-Works best on **X11**. On **Wayland**, Pasty runs through XWayland. Your compositor may ignore
-"always on top", and Pasty can only see the cursor and focused app for XWayland windows.
-Optional packages: `libxss1` / `libXScrnSaver` (napping when you're away) and `libsecret-tools`
-(store the API key in your keyring).
+Known limits:
+
+- **Transparency needs a compositor.** On X11, Pasty can only be see-through while a compositing window manager
+  is running; without one it sits in a white square (Pasty tells you when this happens). On some desktops it
+  shows the white square even with compositing on (seen on MATE); that's not solved yet.
+- **X11 works best.** On Wayland, Pasty runs through XWayland: your compositor may ignore "always on top", and
+  Pasty can only see the cursor and focused app for XWayland windows.
+- **No global ask shortcut.** Bind a key to `pasty` in your desktop's keyboard settings instead (see below).
+- **Tray icon** needs a panel that supports StatusNotifier/AppIndicator icons.
+- **Optional packages:** `libxss1` / `libXScrnSaver` (napping when you're away) and `libsecret-tools`
+  (store the API key in your keyring).
 
 ## Using Pasty
 

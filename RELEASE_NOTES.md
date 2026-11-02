@@ -31,6 +31,16 @@
   private memory from about 145 MB to about 39 MB, and CPU use to about a third. If a machine ever draws oddly,
   set `PASTY_RENDERING=gpu` to switch back.
 
+**Linux is now experimental.**
+
+- Pasty is made for Windows; the Linux build continues as **experimental**: provided as-is, fixed when fixes are
+  simple, and not tested across distributions. Bug reports and pull requests are welcome.
+- Known limits: transparency needs a running compositor (otherwise Pasty sits in a white square, and now says so),
+  and some desktops show the white square even with compositing on (seen on MATE; not solved yet). X11 works best;
+  Wayland runs through XWayland with limits. There's no global ask shortcut (bind a key to `pasty` instead), and
+  the tray icon needs StatusNotifier/AppIndicator support.
+- Install with `sh install.sh` (the old `./install.sh` instruction failed on tarballs built on Windows).
+
 ---
 # Pasty the Desktop Companion 1.1.2
 

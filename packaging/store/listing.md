@@ -9,12 +9,12 @@ Limits noted in brackets are Partner Center's.
 Pasty the Desktop Companion
 
 ## Short description [up to 1,000 characters; shown at the top of the listing]
-Pasty is an orange glue stick with a snap-on cap, very expressive eyebrows, and opinions. A friendly desktop companion that lives on your screen, tells jokes, shares Windows tips and reacts when you poke it. Works completely offline, collects nothing, and can optionally connect to an AI brain of your choice. Born on Halloween 2026.
+Pasty is a bottle of school glue with a pointy orange cap, very expressive eyebrows, and opinions. A friendly desktop companion that lives on your screen, tells jokes, shares Windows tips and reacts when you poke it. Works completely offline, collects nothing, and can optionally connect to an AI brain of your choice. Born on Halloween 2026.
 
 ## Description [up to 10,000 characters]
 Remember the desktop assistants of the 90s? Pasty is what might have happened if one of them had survived into the modern era: helpful, nostalgic, slightly obnoxious, technically competent, and occasionally sarcastic.
 
-Pasty is an original character: an orange glue stick with a teal snap-on cap and eyebrows that do a lot of the talking. It lives on your desktop, always on top, wherever you drag it. Prefer a different look? Pick one of eight companions, from Classic Pasty (the original tube of paste) to Brick, a 90s brick phone, or Potato.
+Pasty is an original character: a bottle of school glue with a pointy orange cap and eyebrows that do a lot of the talking. It lives on your desktop, always on top, wherever you drag it. Prefer a different look? Pick one of ten companions, from Classic Pasty (the original tube of paste) and Gluey the glue stick to Coppie the little copier, Brick the 90s brick phone, or Potato.
 
 WHAT PASTY DOES
 • Hangs out on your desktop with idle, listening, thinking and talking animations, and its eyes follow your cursor
@@ -43,7 +43,7 @@ FREE AND OPEN SOURCE
 Pasty is free software under the GNU GPL v3 or later. Source code: https://github.com/thestickybullgod/pasty-the-desktop-companion
 
 ## What's new in this version
-A new look: Pasty is now an orange glue stick (the original tube is still there as Classic Pasty), and you can pick from eight companions. Also new: reminders, break nudges, quiet hours, a global shortcut to ask Pasty from any app (Ctrl+Alt+P), reduced motion, and much lower memory use.
+Pasty, redesigned: he's now a bottle of school glue with a pointy orange cap. Two new friends join him: Gluey the glue stick and Coppie the little copier, for ten companions in all. And the eyebrows do much more acting: bigger expressions, a quick eyebrow flash when you ask something, and the occasional knowing raised brow.
 
 ## Product features [up to 20, 200 characters each]
 1. An original animated desktop companion that lives on top of your other windows
@@ -57,7 +57,7 @@ A new look: Pasty is now an orange glue stick (the original tube is still there 
 9. Optional Start with Windows
 10. Halloween Edition with a witch hat, a bat friend and ghost mode
 11. Free and open source (GPL-3.0-or-later)
-12. Pick your companion: Pasty, Classic Pasty, Brick, Sticky, Floppy, Mugsy, Hilite or Potato
+12. Pick your companion: Pasty, Classic Pasty, Gluey, Coppie, Brick, Sticky, Floppy, Mugsy, Hilite or Potato
 13. Reminders, break nudges and quiet hours
 14. Ask from any app with Ctrl+Alt+P
 15. Reduced motion that follows your Windows animation setting
@@ -67,7 +67,7 @@ A new look: Pasty is now an orange glue stick (the original tube is still there 
 2. `2-bring-your-own-brain.png`: Use Pasty's offline personality, or connect an AI brain of your choice.
 3. `3-private-by-design.png`: Private by design: Pasty collects nothing.
 4. `4-halloween-edition.png`: The Halloween Edition: Pasty was born on Halloween 2026.
-5. `5-pick-your-companion.png`: Pick your companion: eight looks, one personality.
+5. `5-pick-your-companion.png`: Pick your companion: ten looks, one personality.
 
 ## Search terms [up to 7]
 1. desktop companion

@@ -2,7 +2,7 @@
 
 **Your desktop companion. Born on Halloween 2026.**
 
-**Pasty the Desktop Companion** ("Pasty" for short) is an orange glue stick with a snap-on cap, very expressive eyebrows, and opinions. It's a spiritual
+**Pasty the Desktop Companion** ("Pasty" for short) is a bottle of school glue with a pointy orange cap, very expressive eyebrows, and opinions. It's a spiritual
 successor to the classic 90s desktop assistant: the one that might have evolved if that idea had
 survived into the modern era. Helpful, nostalgic, slightly obnoxious, technically competent, and
 occasionally sarcastic.
@@ -18,10 +18,10 @@ character assets are used or redistributed.
 
 - 🖱️ **Lives on your desktop**: always on top, drag it anywhere, and it remembers where you left it.
 - 💬 **Speech bubbles**, with a typewriter effect and an ask box (double-click Pasty).
-- 🎭 **Pick your companion**: Pasty (an orange glue stick), Classic Pasty (the original tube), Brick (a 90s brick
-  phone), Sticky, Floppy, Mugsy, Hilite or Potato.
+- 🎭 **Pick your companion**: Pasty (a school-glue bottle), Classic Pasty (the original tube), Gluey (a glue
+  stick), Coppie (a little copier), Brick (a 90s brick phone), Sticky, Floppy, Mugsy, Hilite or Potato.
 - 🎞️ **Animated**: idle, listening, thinking, talking, sleeping, plus reactions (pokes, hops, waves, smugness).
-  Eyes follow your cursor.
+  Eyes follow your cursor, and the eyebrows do a lot of the acting.
 - 🪟 **Windows 11-style settings**: Fluent design, light and dark mode, applies changes instantly.
 - 📴 **Works completely offline.** Personality, jokes, tips and commands need no network.
 - 🤖 **Optional AI brain** (Claude). Off by default; falls back to offline if anything goes wrong.
@@ -57,18 +57,18 @@ files, cursor or screen. It respects Snooze, Quiet mode and full-screen hiding, 
 ## Install
 
 ### Windows 10 / 11
-Download `Pasty-1.2.0-win-x64.zip` (or `win-arm64`), extract anywhere, run `Pasty.exe`.
+Download `Pasty-1.3.0-win-x64.zip` (or `win-arm64`), extract anywhere, run `Pasty.exe`.
 No installer and no admin rights needed. Turn on *Start with Windows* in Settings if you'd like.
 
 ### Linux (experimental)
 Pasty is made for Windows. The Linux build is **experimental**: it's provided as-is, gets fixes when they're
 simple, and isn't tested across distributions. Bug reports and pull requests are welcome.
 
-Download `Pasty-1.2.0-linux-x64.tar.gz` (or `linux-arm64`), then:
+Download `Pasty-1.3.0-linux-x64.tar.gz` (or `linux-arm64`), then:
 
 ```sh
-tar -xzf Pasty-1.2.0-linux-x64.tar.gz
-cd Pasty-1.2.0-linux-x64
+tar -xzf Pasty-1.3.0-linux-x64.tar.gz
+cd Pasty-1.3.0-linux-x64
 sh install.sh           # per-user install, no root; sh install.sh --uninstall to remove
 ```
 

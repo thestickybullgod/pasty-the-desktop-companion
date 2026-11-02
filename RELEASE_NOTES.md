@@ -1,3 +1,21 @@
+# Pasty the Desktop Companion 1.3.0
+
+**Pasty, redesigned. And two new friends.**
+
+- **Pasty is now a bottle of school glue** with a pointy orange twist cap that tips like a hat when he waves. His
+  coral label and white swirl stay, and the label turns orange-and-black at Halloween.
+- **Gluey** joins the cast: a glossy orange twist-up glue stick with a lightning-bolt label. The glue peeks out when
+  his cap tips. He was Pasty's look in 1.2.0, and he's a little smug about never making a mess.
+- **Coppie** joins too: a small desktop copier whose scanner lid flips up when he waves. He insists he never jams.
+  He also repeats things for emphasis. He also repeats things for emphasis.
+- **Classic Pasty** (the original tube) is still there. Ten companions in all.
+- **Expressive eyebrows.** Bigger expressions (a one-brow-up "oh, really?", a worried arch, a proper scowl), a quick
+  eyebrow flash when you open the ask box, brows that lift as he makes his point, and now and then, while idle, a
+  single raised brow. On every character.
+- Bolder arms to match the bolder outlines.
+- New logo cap, app icons, tiles and Store screenshots.
+
+---
 # Pasty the Desktop Companion 1.2.0
 
 **A new look, and pick your companion.**

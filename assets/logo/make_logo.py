@@ -1,5 +1,5 @@
-"""Builds Pasty's wordmark logo as SVG: Fredoka letters converted to outlines, the teal glue-stick cap on the P,
-and the orange swirl underneath. Usage: python -I make_logo.py <font.ttf> <out-dir>"""
+"""Builds Pasty's wordmark logo as SVG: Fredoka letters converted to outlines, the pointy orange cap on the P,
+and the coral swirl underneath. Usage: python -I make_logo.py <font.ttf> <out-dir>"""
 import math
 import sys
 from pathlib import Path
@@ -15,7 +15,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 INK, INK_DARK = "#123B37", "#F2FBF9"
 TAGLINE, TAGLINE_DARK = "#1F5E57", "#A9DCD3"
-SWIRL = "#F57A2A"   # glue-stick orange
+SWIRL = "#FF6B57"   # Pasty's coral label
 
 
 def instance(weight):
@@ -88,22 +88,28 @@ def glyph_bounds(font, char, size, x, baseline):
     return b.bounds
 
 
+CAP_HEIGHT = 45 / 40   # the cap is 40 units wide and 45 tall
+
+
 def cap(cx, bottom, width, angle):
-    """Pasty's glue-stick cap: softly domed, teal gradient, a rim and a highlight; rotated around its bottom centre.
-    Same proportions as the cap in GlueStickBody.axaml (84 x 42 units)."""
-    k = width / 84
-    x, y = cx - width / 2, bottom - 42 * k
+    """Pasty's pointy orange twist cap: a ridged collar under a nozzle; rotated around its bottom centre.
+    Same shape as the cap in PastyBody.axaml (40 x 45 units)."""
+    k = width / 40
+    x, y = cx - width / 2, bottom - 45 * k
 
     def pt(a, b):
         return f"{x + a * k:.1f},{y + b * k:.1f}"
 
-    dome = (f"M {pt(0, 38)} L {pt(0, 18)} Q {pt(0, 0)} {pt(22, 0)} L {pt(62, 0)} Q {pt(84, 0)} {pt(84, 18)} "
-            f"L {pt(84, 38)} Q {pt(84, 42)} {pt(80, 42)} L {pt(4, 42)} Q {pt(0, 42)} {pt(0, 38)} Z")
+    nozzle = f"M {pt(8, 28)} L {pt(16, 5)} Q {pt(20, 0)} {pt(24, 5)} L {pt(32, 28)} Z"
+    ridges = " ".join(f"M {pt(a, 30)} L {pt(a, 41)}" for a in (6, 12, 18, 24, 30, 36))
+    stroke = f'stroke="#8A3A06" stroke-width="{2.2 * k:.1f}"'
     return (f'<g transform="rotate({angle} {cx:.1f} {bottom:.1f})">'
-            f'<path d="{dome}" fill="url(#cap)" stroke="#0B6B62" stroke-width="{width * 0.035:.1f}" />'
-            f'<rect x="{x + 1 * k:.1f}" y="{y + 33 * k:.1f}" width="{82 * k:.1f}" height="{4 * k:.1f}" fill="#0B6B62" opacity="0.45" />'
-            f'<path d="M {pt(12, 10)} Q {pt(18, 5)} {pt(32, 5)}" fill="none" stroke="#9AF0E5" '
-            f'stroke-width="{3 * k:.1f}" stroke-linecap="round" opacity="0.7" />'
+            f'<path d="{nozzle}" fill="url(#cap)" {stroke} stroke-linejoin="round" />'
+            f'<rect x="{x:.1f}" y="{y + 26 * k:.1f}" width="{40 * k:.1f}" height="{19 * k:.1f}" rx="{5 * k:.1f}" fill="url(#cap)" {stroke} />'
+            f'<path d="{ridges}" stroke="#8A3A06" stroke-width="{1.6 * k:.1f}" opacity="0.5" />'
+            f'<path d="M {pt(14, 16)} L {pt(17, 7)}" stroke="#FFFFFF" stroke-width="{2.2 * k:.1f}" stroke-linecap="round" opacity="0.8" />'
+            f'<path d="M {pt(4, 33)} Q {pt(4, 29)} {pt(8, 29)}" fill="none" stroke="#FFFFFF" stroke-width="{2 * k:.1f}" '
+            f'stroke-linecap="round" opacity="0.75" />'
             f'</g>')
 
 
@@ -127,7 +133,7 @@ def build(dark=False, tagline=False):
 
     # Cap sits on the P's top, slightly right of the stem, tipped back like a hat.
     p = glyph_bounds(bold, "P", size, x0, baseline)
-    cap_w = (p[2] - p[0]) * 0.72
+    cap_w = (p[2] - p[0]) * 0.56
     # Centred on the P, sunk a touch into its top so it clearly sits there, tipped back like a hat.
     cap_svg = cap(p[0] + (p[2] - p[0]) * 0.5, p[1] + size * 0.05, cap_w, -9)
 
@@ -150,14 +156,14 @@ def build(dark=False, tagline=False):
         extra = f'<path d="{tag}" fill="{TAGLINE_DARK if dark else TAGLINE}" />'
         height = ty + tsize * 0.35
 
-    cap_top = p[1] - cap_w * 0.95
+    cap_top = p[1] - cap_w * CAP_HEIGHT * 1.15
     min_y = min(top, cap_top) - 12
     width = right + x0
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 {min_y:.0f} {width:.0f} {height - min_y:.0f}" role="img" aria-label="Pasty the Desktop Companion">
   <title>Pasty the Desktop Companion</title>
   <defs>
     <linearGradient id="cap" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#2CC5B5" /><stop offset="0.5" stop-color="#14A99A" /><stop offset="1" stop-color="#0E857A" />
+      <stop offset="0" stop-color="#FFA04A" /><stop offset="0.45" stop-color="#FF7A1A" /><stop offset="1" stop-color="#C9520A" />
     </linearGradient>
   </defs>
   {sq}

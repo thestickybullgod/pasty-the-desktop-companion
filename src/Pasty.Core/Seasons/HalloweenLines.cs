@@ -65,7 +65,8 @@ public static class HalloweenLines
         new("I'm not saying your desktop is haunted, but I've seen icons move. It was you. You moved them.", 1, PastyReaction.Smug),
         new("Fun fact: bats are the only flying mammals. My bat friend is the only flying mammal who works here.", 0),
         new("I tried to be a ghost for Halloween, but I'm already pretty pale. Paste joke. Sorry.", 0, PastyReaction.Happy, Characters.Characters.ClassicPastyId),
-        new("I wanted to be a pumpkin for Halloween, but I'm already orange. I went as myself. Nailed it.", 0, PastyReaction.Happy, Characters.Characters.PastyId),
+        new("I wanted to be a pumpkin for Halloween, but I'm already orange. I went as myself. Nailed it.", 0, PastyReaction.Happy, Characters.Characters.GlueyId),
+        new("I'm going as a ghost this year. White all over, and I already had the pointy hat. Effort: zero.", 0, PastyReaction.Happy, Characters.Characters.PastyId),
         new("Spooky tip: Win+L locks your PC so no ghosts can use it while you're getting candy.", 0),
         new("What's a ghost's favorite key? Esc-ape. 👻", 0, PastyReaction.Smug),
         new("This hat cost me a fortune. And by fortune I mean nothing. I'm {kind}.", 1),
@@ -79,7 +80,8 @@ public static class HalloweenLines
         new("I've decided I'm a vampire. I don't drink blood. I drink clipboard. Copy something. Please. I'm so thirsty.", 2, PastyReaction.Smug),
         new("Legend says if you stare at the Recycle Bin long enough, it stares back. I'd know. I've been staring for hours.", 2),
         new("Is it weird that I want to be buried in this hat? Not that I'm planning anything. I'm a tube. We last forever.", 2, Only: Characters.Characters.ClassicPastyId),
-        new("Is it weird that I want to be buried in this hat? Not that I'm planning anything. Just put my cap back on so I don't dry out.", 2, Only: Characters.Characters.PastyId),
+        new("Is it weird that I want to be buried in this hat? Not that I'm planning anything. Just put my cap back on so I don't dry out.", 2, Only: Characters.Characters.GlueyId),
+        new("Is it weird that I want to be buried in this hat? Not that I'm planning anything. Just don't let my nozzle dry out.", 2, Only: Characters.Characters.PastyId),
     ];
 
     public static readonly Line[] Poke =

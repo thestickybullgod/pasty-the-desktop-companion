@@ -124,27 +124,37 @@ internal static class StoreScreenshots
         await RenderAsync(page, width, height, System.IO.Path.Combine(directory, "character-preview.png"));
     }
 
+    private static string Number(int n) =>
+        n is >= 1 and <= 12
+            ? new[] { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" }[n - 1]
+            : n.ToString();
+
     /// <summary>All the companions side by side, each with its name: "Pick your companion".</summary>
     private static Control BuildLineup()
     {
         IBrush Solid(string color) => new SolidColorBrush(Color.Parse(color));
-        var row = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center, Spacing = 22 };
+        var all = Pasty.Core.Characters.Characters.All;
+        // Two rows once the cast outgrows one 1920-pixel line.
+        var perRow = all.Count > 8 ? (all.Count + 1) / 2 : all.Count;
+        var rows = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center, Spacing = 4 };
         var reactions = new[] { PastyReaction.Wave, PastyReaction.Smug, PastyReaction.Happy, PastyReaction.Surprised, PastyReaction.Happy, PastyReaction.Smug, PastyReaction.Happy };
-        var i = 0;
-        foreach (var info in Pasty.Core.Characters.Characters.All)
+        for (var i = 0; i < all.Count; i++)
         {
-            var avatar = new PastyAvatar { CharacterId = info.Id, Margin = new Thickness(12, 46, 12, 0), ClipToBounds = false };
-            avatar.ShowPose(PoseFor(reactions[i++ % reactions.Length], Season.None) with { CapTilt = 0, CapLift = 0 });
-            var cell = new StackPanel { Spacing = 6 };
-            cell.Children.Add(new LayoutTransformControl { LayoutTransform = new ScaleTransform(1.3, 1.3), Child = avatar, ClipToBounds = false });
-            cell.Children.Add(new TextBlock { Text = info.Title, FontSize = 34, FontWeight = FontWeight.SemiBold, Foreground = Solid("#123B37"), HorizontalAlignment = HorizontalAlignment.Center });
-            row.Children.Add(cell);
+            if (i % perRow == 0)
+                rows.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center, Spacing = 34 });
+            var info = all[i];
+            var avatar = new PastyAvatar { CharacterId = info.Id, Margin = new Thickness(12, 30, 12, 0), ClipToBounds = false };
+            avatar.ShowPose(PoseFor(reactions[i % reactions.Length], Season.None) with { CapTilt = 0, CapLift = 0 });
+            var cell = new StackPanel { Spacing = 2, Width = 230 };
+            cell.Children.Add(new LayoutTransformControl { LayoutTransform = new ScaleTransform(1.15, 1.15), Child = avatar, ClipToBounds = false, HorizontalAlignment = HorizontalAlignment.Center });
+            cell.Children.Add(new TextBlock { Text = info.Title, FontSize = 32, FontWeight = FontWeight.SemiBold, Foreground = Solid("#123B37"), HorizontalAlignment = HorizontalAlignment.Center });
+            ((StackPanel)rows.Children[^1]).Children.Add(cell);
         }
 
-        var layout = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Spacing = 40 };
-        layout.Children.Add(new TextBlock { Text = "Pick your companion", FontSize = 76, FontWeight = FontWeight.Bold, Foreground = Solid("#123B37"), HorizontalAlignment = HorizontalAlignment.Center });
-        layout.Children.Add(row);
-        layout.Children.Add(new TextBlock { Text = $"Same personality, {Pasty.Core.Characters.Characters.All.Count switch { 8 => "eight", 7 => "seven", var n => n.ToString() }} looks. Switch any time in Settings.", FontSize = 34, Foreground = Solid("#2E4A47"), HorizontalAlignment = HorizontalAlignment.Center });
+        var layout = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Spacing = 24 };
+        layout.Children.Add(new TextBlock { Text = "Pick your companion", FontSize = 72, FontWeight = FontWeight.Bold, Foreground = Solid("#123B37"), HorizontalAlignment = HorizontalAlignment.Center });
+        layout.Children.Add(rows);
+        layout.Children.Add(new TextBlock { Text = $"Same personality, {Number(all.Count)} looks. Switch any time in Settings.", FontSize = 32, Foreground = Solid("#2E4A47"), HorizontalAlignment = HorizontalAlignment.Center });
 
         return new Grid
         {

@@ -1,0 +1,72 @@
+<bodies:CharacterBody xmlns="https://github.com/avaloniaui"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:bodies="using:Pasty.Desktop.Character.Bodies"
+                      x:Class="Pasty.Desktop.Character.Bodies.GlueyBody"
+                      Width="140" Height="184">
+    <!-- Gluey: a glossy orange twist-up glue stick with a lightning-bolt label. The glue shows when the cap tips off. -->
+    <bodies:CharacterBody.Resources>
+        <StreamGeometry x:Key="Stick">M 32,58 Q 32,48 42,48 H 98 Q 108,48 108,58 V 160 Q 70,167 32,160 Z</StreamGeometry>
+        <SolidColorBrush x:Key="Ink" Color="#4A2408" />
+    </bodies:CharacterBody.Resources>
+
+    <Canvas x:Name="BackLayer" Width="140" Height="184">
+        <!-- Twist base -->
+        <Rectangle Canvas.Left="28" Canvas.Top="155" Width="84" Height="21" RadiusX="8" RadiusY="8" Stroke="#14171C" StrokeThickness="2.5">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#2A2F36" Offset="0" />
+                    <GradientStop Color="#58616C" Offset="0.3" />
+                    <GradientStop Color="#2A2F36" Offset="1" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Path Stroke="#7D8794" StrokeThickness="1.6" StrokeLineCap="Round" Opacity="0.8"
+              Data="M 38,163 V 171 M 46,164 V 172 M 54,164 V 172 M 62,165 V 172 M 70,165 V 172 M 78,165 V 172 M 86,164 V 172 M 94,164 V 172 M 102,163 V 171" />
+
+        <!-- Twisted-up glue, hidden under the cap until it tips -->
+        <Path Data="M 40,52 V 44 Q 40,34 52,33 Q 70,30 88,33 Q 100,34 100,44 V 52 Z" Fill="#F7F3EA" Stroke="#8E8676" StrokeThickness="2" />
+        <Path Data="M 48,42 Q 52,37 62,36" Stroke="#FFFFFF" StrokeThickness="2.5" StrokeLineCap="Round" Opacity="0.9" />
+
+        <!-- Stick -->
+        <Path Data="{StaticResource Stick}" Stroke="{StaticResource Ink}" StrokeThickness="2.5">
+            <Path.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#D9570C" Offset="0" />
+                    <GradientStop Color="#FF8A2E" Offset="0.16" />
+                    <GradientStop Color="#FFB36B" Offset="0.3" />
+                    <GradientStop Color="#FF8A2E" Offset="0.52" />
+                    <GradientStop Color="#F06F1A" Offset="0.8" />
+                    <GradientStop Color="#B3470A" Offset="1" />
+                </LinearGradientBrush>
+            </Path.Fill>
+        </Path>
+
+        <Canvas Width="140" Height="184" Clip="{StaticResource Stick}">
+            <!-- Label: black wrap, teal edges, lightning bolt -->
+            <Rectangle x:Name="Band" Canvas.Left="20" Canvas.Top="124" Width="100" Height="30" Fill="#16181D" />
+            <Rectangle x:Name="EdgeTop" Canvas.Left="20" Canvas.Top="124" Width="100" Height="3" Fill="#2CC5B5" />
+            <Rectangle x:Name="EdgeBottom" Canvas.Left="20" Canvas.Top="151" Width="100" Height="3" Fill="#2CC5B5" />
+            <Path x:Name="Bolt" Data="M 75,128 L 61,141 L 69,141 L 64,151 L 80,136 L 72,136 L 77,128 Z" Fill="#FFC23D" Stroke="#B8780A" StrokeThickness="1" />
+            <!-- Gloss streak and right-side shade -->
+            <Rectangle Canvas.Left="40" Canvas.Top="56" Width="5" Height="100" RadiusX="2.5" RadiusY="2.5" Fill="#FFFFFF" Opacity="0.55" />
+            <Rectangle Canvas.Left="101" Canvas.Top="50" Width="7" Height="116" Fill="#7A2E00" Opacity="0.18" />
+        </Canvas>
+    </Canvas>
+
+    <!-- Glossy orange cap (deeper than the stick) with a grip band -->
+    <Canvas x:Name="TopLayer" Width="140" Height="184">
+        <Path Data="M 27,50 V 30 Q 27,11 49,11 H 91 Q 113,11 113,30 V 50 Q 113,55 108,55 H 32 Q 27,55 27,50 Z" Stroke="#6E2A04" StrokeThickness="2.5">
+            <Path.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#FF8F3A" Offset="0" />
+                    <GradientStop Color="#EE5E0E" Offset="0.45" />
+                    <GradientStop Color="#A93A04" Offset="1" />
+                </LinearGradientBrush>
+            </Path.Fill>
+        </Path>
+        <Rectangle Canvas.Left="28" Canvas.Top="40" Width="84" Height="10" Fill="#6E2A04" Opacity="0.35" />
+        <Path Stroke="#6E2A04" StrokeThickness="1.6" Opacity="0.55"
+              Data="M 36,41 V 49 M 44,41 V 49 M 52,41 V 49 M 60,41 V 49 M 68,41 V 49 M 76,41 V 49 M 84,41 V 49 M 92,41 V 49 M 100,41 V 49" />
+        <Path Data="M 37,26 Q 41,17 58,16" Stroke="#FFFFFF" StrokeThickness="3" StrokeLineCap="Round" Opacity="0.8" />
+    </Canvas>
+</bodies:CharacterBody>

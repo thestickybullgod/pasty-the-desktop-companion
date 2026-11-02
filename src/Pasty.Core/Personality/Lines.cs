@@ -72,7 +72,8 @@ public static class Lines
         new("Yes? Can I help you?", 0, PastyReaction.Poked),
         new("Boop received.", 0, PastyReaction.Poked),
         new("Careful, I'm under pressure. Literally. I'm a tube.", 1, PastyReaction.Poked, Characters.Characters.ClassicPastyId),
-        new("Careful. Twist me up too far and it gets awkward for everyone.", 1, PastyReaction.Poked, Characters.Characters.PastyId),
+        new("Careful. Twist me up too far and it gets awkward for everyone.", 1, PastyReaction.Poked, Characters.Characters.GlueyId),
+        new("Careful, I'm a squeeze bottle. You know exactly what happens next.", 1, PastyReaction.Poked, Characters.Characters.PastyId),
     ];
 
     public static readonly Line[] PokeAnnoyed =
@@ -80,7 +81,8 @@ public static class Lines
         new("Okay, you can stop now.", 1, PastyReaction.Annoyed),
         new("I am not a stress ball.", 1, PastyReaction.Annoyed),
         new("Every click squeezes a little more of me out. Think about that.", 2, PastyReaction.Annoyed, Characters.Characters.ClassicPastyId),
-        new("Every poke wears a little more of me down. That's how glue sticks work. Think about that.", 2, PastyReaction.Annoyed, Characters.Characters.PastyId),
+        new("Every poke wears a little more of me down. That's how glue sticks work. Think about that.", 2, PastyReaction.Annoyed, Characters.Characters.GlueyId),
+        new("Keep squeezing and you'll be peeling dried glue off your desk all week. Your call.", 2, PastyReaction.Annoyed, Characters.Characters.PastyId),
         new("Do you poke all your software like this?", 2, PastyReaction.Annoyed),
         new("I'm filing a bug report. Against you.", 2, PastyReaction.Annoyed),
     ];
@@ -228,7 +230,8 @@ public static class Lines
         new("A SQL query walks into a bar, walks up to two tables and asks: 'Can I join you?'"),
         new("I'd tell you a UDP joke, but you might not get it."),
         new("Why did the tube of paste break up with the stapler? Too clingy. Wait, that's me. I'm the clingy one.", Only: Characters.Characters.ClassicPastyId),
-        new("Why does everyone want a glue stick at the party? It holds everything together. Also it never leaves. Hi.", Only: Characters.Characters.PastyId),
+        new("Why does everyone want a glue stick at the party? It holds everything together. Also it never leaves. Hi.", Only: Characters.Characters.GlueyId),
+        new("Why did the glue bottle get sent to the principal? It kept sticking around after class. Allegedly.", Only: Characters.Characters.PastyId),
         new("How many Windows users does it take to change a light bulb? Just one, but it needs to restart twice."),
     ];
 }

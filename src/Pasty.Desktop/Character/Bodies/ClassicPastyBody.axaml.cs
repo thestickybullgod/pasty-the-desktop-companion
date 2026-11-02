@@ -4,9 +4,9 @@ using Pasty.Core.Seasons;
 
 namespace Pasty.Desktop.Character.Bodies;
 
-public partial class PastyBody : CharacterBody
+public partial class ClassicPastyBody : CharacterBody
 {
-    public PastyBody() => InitializeComponent();
+    public ClassicPastyBody() => InitializeComponent();
 
     public override Control Back => BackLayer;
 

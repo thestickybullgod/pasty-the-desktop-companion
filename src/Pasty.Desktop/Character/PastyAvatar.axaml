@@ -22,13 +22,16 @@
         <Canvas x:Name="Figure" Width="140" Height="184" RenderTransformOrigin="70,176">
 
             <!-- Arms (behind the body) -->
+            <!-- Each arm: an ink outline with a lighter core, so it holds up next to bold body outlines. -->
             <Canvas x:Name="LeftArm" Width="140" Height="184">
-                <Path Data="M 31,116 Q 17,122 13,136" Stroke="{StaticResource Outline}" StrokeThickness="4" StrokeLineCap="Round" />
-                <Ellipse Canvas.Left="8" Canvas.Top="132" Width="10" Height="10" Fill="White" Stroke="{StaticResource Outline}" StrokeThickness="2" />
+                <Path Data="M 31,116 Q 17,122 13,136" Stroke="{StaticResource Ink}" StrokeThickness="6.5" StrokeLineCap="Round" />
+                <Path Data="M 31,116 Q 17,122 13,136" Stroke="{StaticResource Outline}" StrokeThickness="3.2" StrokeLineCap="Round" />
+                <Ellipse Canvas.Left="7" Canvas.Top="131" Width="12" Height="12" Fill="White" Stroke="{StaticResource Ink}" StrokeThickness="2.2" />
             </Canvas>
             <Canvas x:Name="RightArm" Width="140" Height="184" RenderTransformOrigin="109,116">
-                <Path Data="M 109,116 Q 123,122 127,136" Stroke="{StaticResource Outline}" StrokeThickness="4" StrokeLineCap="Round" />
-                <Ellipse Canvas.Left="122" Canvas.Top="132" Width="10" Height="10" Fill="White" Stroke="{StaticResource Outline}" StrokeThickness="2" />
+                <Path Data="M 109,116 Q 123,122 127,136" Stroke="{StaticResource Ink}" StrokeThickness="6.5" StrokeLineCap="Round" />
+                <Path Data="M 109,116 Q 123,122 127,136" Stroke="{StaticResource Outline}" StrokeThickness="3.2" StrokeLineCap="Round" />
+                <Ellipse Canvas.Left="121" Canvas.Top="131" Width="12" Height="12" Fill="White" Stroke="{StaticResource Ink}" StrokeThickness="2.2" />
             </Canvas>
 
             <!-- The character's body -->

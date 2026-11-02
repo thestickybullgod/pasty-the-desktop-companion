@@ -109,22 +109,61 @@ public partial class MugsyBody : CharacterBody
     }
 }
 
-/// <summary>Pasty since 1.2: an orange glue stick with a teal snap-on cap (the classic tube is <see cref="PastyBody"/>).</summary>
-public sealed partial class GlueStickBody : CharacterBody
+/// <summary>Pasty since 1.3: a bottle of school glue with a pointy orange twist cap (the tube is <see cref="ClassicPastyBody"/>).</summary>
+public partial class PastyBody : CharacterBody
 {
-    public GlueStickBody() => InitializeComponent();
+    public PastyBody() => InitializeComponent();
+    public override Control Back => BackLayer;
+    public override Control? Topper => TopLayer;
+    public override double FaceOffsetY => 6;   // clear of the bottle's shoulders
+    public override double HatDrop => 16;
+    public override double PortraitTop => 6;
+
+    /// <summary>Halloween: an orange label with a black swirl.</summary>
+    public override void ApplySeason(Pasty.Core.Seasons.Season season)
+    {
+        var halloween = season == Pasty.Core.Seasons.Season.Halloween;
+        Band.Fill = new SolidColorBrush(Color.Parse(halloween ? "#FF7A1A" : "#FF6B57"));
+        BandSwirl.Stroke = new SolidColorBrush(Color.Parse(halloween ? "#1A1410" : "#FFFFFF"));
+    }
+}
+
+/// <summary>Gluey, Pasty's friend: an orange twist-up glue stick whose glue shows when the cap tips off.</summary>
+public partial class GlueyBody : CharacterBody
+{
+    public GlueyBody() => InitializeComponent();
     public override Control Back => BackLayer;
     public override Control? Topper => TopLayer;
     public override double FaceOffsetY => 7;   // clear of the cap's rim
     public override double HatDrop => 8;
     public override double PortraitTop => 4;
 
-    /// <summary>Halloween: the cream label turns black with an orange swirl.</summary>
+    /// <summary>Halloween: a purple label with orange trim.</summary>
     public override void ApplySeason(Pasty.Core.Seasons.Season season)
     {
         var halloween = season == Pasty.Core.Seasons.Season.Halloween;
-        Band.Fill = new SolidColorBrush(Color.Parse(halloween ? "#1A1410" : "#FFF4E2"));
-        BandSwirl.Stroke = new SolidColorBrush(Color.Parse(halloween ? "#FF9F1C" : "#14A99A"));
+        Band.Fill = new SolidColorBrush(Color.Parse(halloween ? "#2B1A3F" : "#16181D"));
+        var trim = new SolidColorBrush(Color.Parse(halloween ? "#FF7A1A" : "#2CC5B5"));
+        EdgeTop.Fill = trim;
+        EdgeBottom.Fill = trim;
+    }
+}
+
+/// <summary>Coppie: a small desktop copier. At Halloween its fresh copy is a jack-o'-lantern.</summary>
+public partial class CoppieBody : CharacterBody
+{
+    public CoppieBody() => InitializeComponent();
+    public override Control Back => BackLayer;
+    public override Control? Topper => TopLayer;
+    public override double FaceOffsetY => 8;   // on the front panel, below the lid
+    public override double HatDrop => 12;
+    public override double PortraitTop => 22;
+
+    public override void ApplySeason(Pasty.Core.Seasons.Season season)
+    {
+        var halloween = season == Pasty.Core.Seasons.Season.Halloween;
+        PrintLines.IsVisible = !halloween;
+        Pumpkin.IsVisible = halloween;
     }
 }
 
@@ -139,7 +178,9 @@ public static class BodyCatalog
         "mugsy" => new MugsyBody(),
         "hilite" => new HiliteBody(),
         "potato" => new PotatoBody(),
-        "pasty-classic" => new PastyBody(),
-        _ => new GlueStickBody(),
+        "pasty-classic" => new ClassicPastyBody(),
+        "gluey" => new GlueyBody(),
+        "coppie" => new CoppieBody(),
+        _ => new PastyBody(),
     };
 }

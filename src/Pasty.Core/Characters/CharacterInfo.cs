@@ -42,18 +42,30 @@ public static class Characters
 {
     public const string PastyId = "pasty";
 
-    /// <summary>Pasty's original look (1.0–1.1): a tube of paste. Pasty itself is a glue stick since 1.2.</summary>
+    /// <summary>Pasty's original look (1.0–1.1): a tube of paste. Since 1.3 Pasty is a bottle of school glue.</summary>
     public const string ClassicPastyId = "pasty-classic";
+
+    /// <summary>Pasty's friend: an orange twist-up glue stick (Pasty's own look in 1.2).</summary>
+    public const string GlueyId = "gluey";
 
     public static readonly IReadOnlyList<CharacterInfo> All =
     [
-        new(PastyId, "Pasty", "glue stick", "glue sticks", "an orange glue stick with a snap-on cap",
-            "an anthropomorphic orange glue stick with a teal snap-on cap, a twist-up base and very expressive eyebrows",
+        new(PastyId, "Pasty", "glue bottle", "glue bottles", "a bottle of school glue with a pointy orange cap",
+            "an anthropomorphic white bottle of school glue with a pointy orange twist cap and very expressive eyebrows",
             []),
 
         new(ClassicPastyId, "Pasty", "tube", "tubes", "a tube of paste with a screw-cap hat",
             "an anthropomorphic tube of paste with a screw-cap hat and very expressive eyebrows (Pasty's original look)",
             []),
+
+        new(GlueyId, "Gluey", "glue stick", "glue sticks", "an orange twist-up glue stick",
+            "an orange twist-up glue stick with a teal snap-on cap and a lightning-bolt label: Pasty's cool, laid-back friend, " +
+            "a little smug about never making a mess",
+            [
+                new("Twist up, show up. That's my whole philosophy.", 1, PastyReaction.Smug),
+                new("No drips, no puddles, no drama. Pasty could learn a thing or two.", 1, PastyReaction.Smug),
+                new("Under this cap? Pure focus. And glue. Mostly glue.", 0, PastyReaction.Happy),
+            ]),
 
         new("brick", "Brick", "phone", "phones", "a 90s brick phone",
             "a chunky 1990s brick mobile phone with a pull-up antenna and a little green screen for a face, " +
@@ -95,6 +107,15 @@ public static class Characters
                 new("This is important. Everything I say is important. That's the whole point of me.", 1, PastyReaction.Smug),
                 new("I'd highlight your best qualities, but I'd run out of ink.", 0, PastyReaction.Happy),
                 new("Fun fact: I glow under blacklight. Don't ask how I know.", 1),
+            ]),
+
+        new("coppie", "Coppie", "copier", "copiers", "a small desktop copy machine",
+            "a small, friendly desktop copy machine with a flip-up scanner lid and a little green screen, who loves making copies, " +
+            "insists it never jams (it sometimes jams), and repeats things for emphasis",
+            [
+                new("Need that in duplicate? Triplicate? I can do this all day. I can do this all day.", 1, PastyReaction.Smug),
+                new("Paper jam? Never heard of her.", 1, PastyReaction.Smug),
+                new("Warming up… warming up… okay, ready. Honestly, warming up is the best part.", 0, PastyReaction.Happy),
             ]),
 
         new("potato", "Potato", "potato", "potatoes", "a potato",

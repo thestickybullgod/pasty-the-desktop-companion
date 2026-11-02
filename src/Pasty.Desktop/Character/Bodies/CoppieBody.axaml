@@ -1,0 +1,65 @@
+<bodies:CharacterBody xmlns="https://github.com/avaloniaui"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:bodies="using:Pasty.Desktop.Character.Bodies"
+                      x:Class="Pasty.Desktop.Character.Bodies.CoppieBody"
+                      Width="140" Height="184">
+    <!-- Coppie: a small desktop copy machine. Face on the front panel; the scanner lid flips up like a hat. -->
+    <bodies:CharacterBody.Resources>
+        <SolidColorBrush x:Key="Ink" Color="#2B3442" />
+    </bodies:CharacterBody.Resources>
+
+    <Canvas x:Name="BackLayer" Width="140" Height="184">
+        <!-- Feet -->
+        <Rectangle Canvas.Left="30" Canvas.Top="168" Width="14" Height="7" RadiusX="2" RadiusY="2" Fill="#2B3442" />
+        <Rectangle Canvas.Left="96" Canvas.Top="168" Width="14" Height="7" RadiusX="2" RadiusY="2" Fill="#2B3442" />
+
+        <!-- Cabinet -->
+        <Rectangle Canvas.Left="24" Canvas.Top="58" Width="92" Height="113" RadiusX="9" RadiusY="9" Stroke="{StaticResource Ink}" StrokeThickness="2.5">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#D8D4CB" Offset="0" />
+                    <GradientStop Color="#F6F4EF" Offset="0.3" />
+                    <GradientStop Color="#ECE9E2" Offset="0.65" />
+                    <GradientStop Color="#C3BEB3" Offset="1" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle Canvas.Left="30" Canvas.Top="64" Width="4" Height="60" RadiusX="2" RadiusY="2" Fill="#FFFFFF" Opacity="0.8" />
+
+        <!-- Output slot with a fresh copy -->
+        <Rectangle Canvas.Left="38" Canvas.Top="126" Width="64" Height="5" RadiusX="2" RadiusY="2" Fill="#3A414C" />
+        <Canvas x:Name="Sheet" Width="140" Height="184">
+            <Rectangle Canvas.Left="44" Canvas.Top="128" Width="52" Height="15" Fill="#FFFFFF" Stroke="#8A93A0" StrokeThickness="1.2" />
+            <Path x:Name="PrintLines" Stroke="#9AA3AF" StrokeThickness="1.6" StrokeLineCap="Round"
+                  Data="M 50,133 H 88 M 50,137 H 80 M 50,141 H 84" />
+            <Canvas x:Name="Pumpkin" IsVisible="False">
+                <Ellipse Canvas.Left="63" Canvas.Top="131" Width="14" Height="10" Fill="#FF7A1A" Stroke="#8A3A06" StrokeThickness="1" />
+                <Rectangle Canvas.Left="69" Canvas.Top="128.5" Width="2" Height="3" Fill="#3C6E2E" />
+                <Path Data="M 66,135 l 1.5,-1.5 l 1.5,1.5 Z M 71,135 l 1.5,-1.5 l 1.5,1.5 Z M 66.5,138 Q 70,140 73.5,138" Fill="#1A1410" Stroke="#1A1410" StrokeThickness="0.8" />
+            </Canvas>
+        </Canvas>
+
+        <!-- Paper drawer -->
+        <Rectangle Canvas.Left="30" Canvas.Top="147" Width="80" Height="18" RadiusX="4" RadiusY="4" Fill="#E2DED6" Stroke="{StaticResource Ink}" StrokeThickness="1.8" />
+        <Rectangle Canvas.Left="58" Canvas.Top="153" Width="24" Height="4" RadiusX="2" RadiusY="2" Fill="#3A414C" />
+    </Canvas>
+
+    <!-- Scanner lid with the control panel -->
+    <Canvas x:Name="TopLayer" Width="140" Height="184">
+        <Rectangle Canvas.Left="19" Canvas.Top="42" Width="102" Height="19" RadiusX="6" RadiusY="6" Stroke="{StaticResource Ink}" StrokeThickness="2.5">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Color="#6B7480" Offset="0" />
+                    <GradientStop Color="#454D58" Offset="1" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle Canvas.Left="24" Canvas.Top="45" Width="40" Height="2.5" RadiusX="1.2" RadiusY="1.2" Fill="#FFFFFF" Opacity="0.35" />
+        <!-- Little green screen and buttons -->
+        <Rectangle Canvas.Left="84" Canvas.Top="46" Width="18" Height="10" RadiusX="2" RadiusY="2" Fill="#B7D5A3" Stroke="#23272D" StrokeThickness="1.4" />
+        <Ellipse Canvas.Left="105" Canvas.Top="47" Width="8" Height="8" Fill="#2ECC71" Stroke="#1B6E3F" StrokeThickness="1.2" />
+        <Rectangle Canvas.Left="74" Canvas.Top="49" Width="6" Height="4" RadiusX="1" RadiusY="1" Fill="#9AA3AF" />
+        <!-- Lid handle -->
+        <Rectangle Canvas.Left="36" Canvas.Top="58" Width="22" Height="4" RadiusX="2" RadiusY="2" Fill="#2B3442" />
+    </Canvas>
+</bodies:CharacterBody>

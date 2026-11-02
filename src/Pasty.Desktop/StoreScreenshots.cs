@@ -100,6 +100,8 @@ internal static class StoreScreenshots
             ("rest", PastyReaction.None, Season.None),
             ("wave", PastyReaction.Wave, Season.None),
             ("smug", PastyReaction.Smug, Season.None),
+            ("surprised", PastyReaction.Surprised, Season.None),
+            ("annoyed", PastyReaction.Annoyed, Season.None),
             ("halloween", PastyReaction.Happy, Season.Halloween),
         };
         foreach (var id in ids)
@@ -118,7 +120,7 @@ internal static class StoreScreenshots
             }
             rows.Children.Add(row);
         }
-        var width = 1280;
+        var width = 290 + poses.Length * 276;
         var height = 80 + ids.Length * 360;
         var page = new Grid { Width = width, Height = height, Background = Solid("#F6F3EA"), Children = { rows } };
         await RenderAsync(page, width, height, System.IO.Path.Combine(directory, "character-preview.png"));

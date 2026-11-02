@@ -27,21 +27,21 @@
         <Rectangle Canvas.Left="30" Canvas.Top="64" Width="4" Height="60" RadiusX="2" RadiusY="2" Fill="#FFFFFF" Opacity="0.8" />
 
         <!-- Output slot with a fresh copy -->
-        <Rectangle Canvas.Left="38" Canvas.Top="126" Width="64" Height="5" RadiusX="2" RadiusY="2" Fill="#3A414C" />
+        <Rectangle Canvas.Left="38" Canvas.Top="130" Width="64" Height="5" RadiusX="2" RadiusY="2" Fill="#3A414C" />
         <Canvas x:Name="Sheet" Width="140" Height="184">
-            <Rectangle Canvas.Left="44" Canvas.Top="128" Width="52" Height="15" Fill="#FFFFFF" Stroke="#8A93A0" StrokeThickness="1.2" />
+            <Rectangle Canvas.Left="44" Canvas.Top="132" Width="52" Height="15" Fill="#FFFFFF" Stroke="#8A93A0" StrokeThickness="1.2" />
             <Path x:Name="PrintLines" Stroke="#9AA3AF" StrokeThickness="1.6" StrokeLineCap="Round"
-                  Data="M 50,133 H 88 M 50,137 H 80 M 50,141 H 84" />
+                  Data="M 50,137 H 88 M 50,141 H 80 M 50,145 H 84" />
             <Canvas x:Name="Pumpkin" IsVisible="False">
-                <Ellipse Canvas.Left="63" Canvas.Top="131" Width="14" Height="10" Fill="#FF7A1A" Stroke="#8A3A06" StrokeThickness="1" />
-                <Rectangle Canvas.Left="69" Canvas.Top="128.5" Width="2" Height="3" Fill="#3C6E2E" />
-                <Path Data="M 66,135 l 1.5,-1.5 l 1.5,1.5 Z M 71,135 l 1.5,-1.5 l 1.5,1.5 Z M 66.5,138 Q 70,140 73.5,138" Fill="#1A1410" Stroke="#1A1410" StrokeThickness="0.8" />
+                <Ellipse Canvas.Left="63" Canvas.Top="135" Width="14" Height="10" Fill="#FF7A1A" Stroke="#8A3A06" StrokeThickness="1" />
+                <Rectangle Canvas.Left="69" Canvas.Top="132.5" Width="2" Height="3" Fill="#3C6E2E" />
+                <Path Data="M 66,139 l 1.5,-1.5 l 1.5,1.5 Z M 71,139 l 1.5,-1.5 l 1.5,1.5 Z M 66.5,142 Q 70,144 73.5,142" Fill="#1A1410" Stroke="#1A1410" StrokeThickness="0.8" />
             </Canvas>
         </Canvas>
 
         <!-- Paper drawer -->
-        <Rectangle Canvas.Left="30" Canvas.Top="147" Width="80" Height="18" RadiusX="4" RadiusY="4" Fill="#E2DED6" Stroke="{StaticResource Ink}" StrokeThickness="1.8" />
-        <Rectangle Canvas.Left="58" Canvas.Top="153" Width="24" Height="4" RadiusX="2" RadiusY="2" Fill="#3A414C" />
+        <Rectangle Canvas.Left="30" Canvas.Top="150" Width="80" Height="17" RadiusX="4" RadiusY="4" Fill="#E2DED6" Stroke="{StaticResource Ink}" StrokeThickness="1.8" />
+        <Rectangle Canvas.Left="58" Canvas.Top="156" Width="24" Height="4" RadiusX="2" RadiusY="2" Fill="#3A414C" />
     </Canvas>
 
     <!-- Scanner lid with the control panel -->

@@ -27,6 +27,12 @@ public class CharacterBody : Canvas
     /// <summary>Moves the shared face down, for bodies with something in the way up top.</summary>
     public virtual double FaceOffsetY => 0;
 
+    /// <summary>
+    /// How far the brows may rise (artwork units) before they'd leave the face area, e.g. off a phone's
+    /// screen or under a copier's lid. Raised brows stop here; their tilt still carries the expression.
+    /// </summary>
+    public virtual double BrowHeadroom => 12;
+
     /// <summary>Moves the blush toward the middle so it stays on narrow bodies.</summary>
     public virtual double BlushInset => 0;
 

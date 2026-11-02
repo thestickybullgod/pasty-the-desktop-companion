@@ -147,4 +147,38 @@ public class AnimatorTests
         Assert.All(openings, o => Assert.InRange(o, 0.3, 1.0));
         Assert.True(openings.Max() - openings.Min() > 0.4);
     }
+
+    [Fact]
+    public void Smug_raises_one_brow_and_lowers_the_other()
+    {
+        var animator = new PastyAnimator(new Random(1));
+        animator.React(PastyReaction.Smug);
+        var pose = Run(animator, 1);
+        Assert.True(pose.BrowLeftLift < -7, "the raised brow goes well up");
+        Assert.True(pose.BrowRightLift > 0, "the other brow comes down");
+    }
+
+    [Fact]
+    public void Starting_to_listen_flashes_the_brows()
+    {
+        var animator = new PastyAnimator(new Random(1));
+        Run(animator, 1);
+        animator.SetState(PastyState.Listening);
+        var highest = Enumerable.Range(0, 20).Min(_ => animator.Update(TimeSpan.FromSeconds(1 / 30.0)).BrowLeftLift);
+        var settled = Run(animator, 2).BrowLeftLift;
+        Assert.True(highest < settled - 2, "a quick raise above the listening face, then back down");
+    }
+
+    [Fact]
+    public void Idle_now_and_then_raises_a_single_brow()
+    {
+        var animator = new PastyAnimator(new Random(3));
+        var lopsided = 0.0;
+        for (var i = 0; i < 30 * 50; i++)
+        {
+            var p = animator.Update(TimeSpan.FromSeconds(1 / 30.0));
+            lopsided = Math.Max(lopsided, Math.Abs(p.BrowLeftLift - p.BrowRightLift));
+        }
+        Assert.True(lopsided > 6, "within 50 seconds of idling, one brow goes up on its own");
+    }
 }

@@ -25,6 +25,15 @@ public sealed class PastyAnimator
     private double _lookX;
     private double _lookY;
 
+    // Eyebrows do most of the acting: a quick double raise ("flash") when Pasty starts listening or
+    // waves, and now and then while idle a single raised brow, the knowing look.
+    private const double BrowFlashSeconds = 0.55;
+    private const double BrowQuirkSeconds = 1.6;
+    private double _browFlashAge = double.MaxValue;
+    private double _nextQuirk = 20;
+    private double _quirkAge = double.MaxValue;
+    private int _quirkSide = 1;
+
     private const double BatFlightSeconds = 5;
     private double _nextBat = 12;
     private double _batAge = double.MaxValue;
@@ -67,6 +76,7 @@ public sealed class PastyAnimator
         if (state == State) return;
         State = state;
         if (state == PastyState.Sleeping) EndReaction();
+        if (state == PastyState.Listening) _browFlashAge = 0;   // "I'm all ears"
     }
 
     public void React(PastyReaction reaction)
@@ -85,6 +95,8 @@ public sealed class PastyAnimator
             PastyReaction.Ghost => 3.6,
             _ => 2.2,
         };
+        if (reaction is PastyReaction.Wave or PastyReaction.Happy) _browFlashAge = 0;
+        _quirkAge = double.MaxValue;   // a reaction takes over the face
     }
 
     /// <summary>Where the eyes should look when the state doesn't dictate it. Components roughly -1..1.</summary>
@@ -110,12 +122,15 @@ public sealed class PastyAnimator
         var face = Shape(CurrentFace());
         var p = _pose;
 
-        // Facial features ease toward the target expression.
+        // Facial features ease toward the target expression; the brows are a little quicker than the rest.
         var k = Approach(dt, State == PastyState.Sleeping ? 3 : 14);
-        p.BrowLeftAngle = Lerp(p.BrowLeftAngle, face.BrowLA, k);
-        p.BrowLeftLift = Lerp(p.BrowLeftLift, face.BrowLL, k);
-        p.BrowRightAngle = Lerp(p.BrowRightAngle, face.BrowRA, k);
-        p.BrowRightLift = Lerp(p.BrowRightLift, face.BrowRL, k);
+        var kb = Approach(dt, State == PastyState.Sleeping ? 3 : 18);
+        var (la, ll, ra, rl) = (face.BrowLA, face.BrowLL, face.BrowRA, face.BrowRL);
+        AddBrowAccents(dt, ref la, ref ll, ref ra, ref rl);
+        p.BrowLeftAngle = Lerp(p.BrowLeftAngle, la, kb);
+        p.BrowLeftLift = Lerp(p.BrowLeftLift, ll, kb);
+        p.BrowRightAngle = Lerp(p.BrowRightAngle, ra, kb);
+        p.BrowRightLift = Lerp(p.BrowRightLift, rl, kb);
         p.Blush = Lerp(p.Blush, face.Blush, Approach(dt, 6));
         var lid = Lerp(p.EyeLid, face.Lid, k);
         p.Mouth = State == PastyState.Talking ? MouthShape.Open : face.Mouth;
@@ -260,17 +275,72 @@ public sealed class PastyAnimator
         };
     }
 
+    // Brow angles: positive tips the left brow's inner end down (a scowl); the right brow mirrors it.
     private static FaceShape Shape(Face face) => face switch
     {
-        Face.Happy => new(0, -3, 0, -3, 0.85, 0.75, MouthShape.Smile),
-        Face.Smug => new(-8, -5, 10, 2, 0.6, 0, MouthShape.Smirk),
-        Face.Annoyed => new(16, 2, -16, 2, 0.72, 0, MouthShape.Flat),
-        Face.Surprised => new(0, -7, 0, -7, 1.12, 0, MouthShape.Open),
-        Face.Listening => new(0, -3, 0, -3, 1.05, 0, MouthShape.Smile),
-        Face.Thinking => new(-6, -5, 8, 0, 0.9, 0, MouthShape.Flat),
+        Face.Happy => new(-3, -5, 3, -5, 0.85, 0.75, MouthShape.Smile),
+        Face.Smug => new(-14, -10, 14, 3, 0.6, 0, MouthShape.Smirk),        // one brow way up: "oh really?"
+        Face.Annoyed => new(22, 3, -22, 3, 0.72, 0, MouthShape.Flat),
+        Face.Surprised => new(-6, -12, 6, -12, 1.12, 0, MouthShape.Open),   // high, worried arch
+        Face.Listening => new(-4, -5, 4, -5, 1.05, 0, MouthShape.Smile),
+        Face.Thinking => new(-10, -8, 10, 1, 0.9, 0, MouthShape.Flat),
         Face.Sleepy => new(0, 2, 0, 2, 0.08, 0, MouthShape.Flat),
         _ => new(0, 0, 0, 0, 1, 0, MouthShape.Smile),
     };
+
+    /// <summary>Brow moments layered on the expression: the flash, emphasis while talking, the idle quirk and a ponder.</summary>
+    private void AddBrowAccents(double dt, ref double la, ref double ll, ref double ra, ref double rl)
+    {
+        // Flash: two quick raises.
+        if (_browFlashAge < BrowFlashSeconds)
+        {
+            _browFlashAge += dt;
+            var flash = 7 * Math.Abs(Math.Sin(_browFlashAge / BrowFlashSeconds * 2 * Math.PI));
+            ll -= flash;
+            rl -= flash;
+        }
+
+        switch (State)
+        {
+            case PastyState.Talking when !IsReacting:
+                // Emphasis now and then, like someone making a point.
+                var beat = Math.Max(0, Math.Sin(_time * 2.6)) * Math.Max(0, Math.Sin(_time * 1.1 + 0.7));
+                ll -= 5 * beat;
+                rl -= 5 * beat;
+                break;
+            case PastyState.Thinking:
+                // A slow ponder: the raised brow drifts.
+                ll -= 2 * Math.Sin(_time * 1.7);
+                la -= 3 * Math.Sin(_time * 1.7);
+                break;
+        }
+
+        // Idle quirk: one brow up for a beat, then back. Not while reacting or doing anything else.
+        if (State == PastyState.Idle && !IsReacting)
+        {
+            if (_quirkAge >= BrowQuirkSeconds)
+            {
+                _nextQuirk -= dt;
+                if (_nextQuirk <= 0)
+                {
+                    _quirkAge = 0;
+                    _quirkSide = _random.Next(2) == 0 ? -1 : 1;
+                    _nextQuirk = 20 + _random.NextDouble() * 25;
+                }
+            }
+            if (_quirkAge < BrowQuirkSeconds)
+            {
+                _quirkAge += dt;
+                var q = Envelope(_quirkAge, BrowQuirkSeconds, rise: 0.18, fall: 0.35);
+                if (_quirkSide < 0) { ll -= 9 * q; la -= 12 * q; ra += 4 * q; rl += 2 * q; }
+                else { rl -= 9 * q; ra += 12 * q; la -= 4 * q; ll += 2 * q; }
+            }
+        }
+        else
+        {
+            _quirkAge = double.MaxValue;
+        }
+    }
 
     private double BlinkFactor(double dt)
     {

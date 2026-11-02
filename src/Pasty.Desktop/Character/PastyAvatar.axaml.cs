@@ -186,10 +186,11 @@ public partial class PastyAvatar : UserControl
         Gaze.X = p.GazeX;
         Gaze.Y = p.GazeY;
 
+        var headroom = -(_body?.BrowHeadroom ?? 12);
         BrowLeftRotate.Angle = p.BrowLeftAngle;
-        BrowLeftLift.Y = p.BrowLeftLift;
+        BrowLeftLift.Y = Math.Max(p.BrowLeftLift, headroom);
         BrowRightRotate.Angle = p.BrowRightAngle;
-        BrowRightLift.Y = p.BrowRightLift;
+        BrowRightLift.Y = Math.Max(p.BrowRightLift, headroom);
 
         BlushLeft.Opacity = BlushRight.Opacity = p.Blush;
         MouthSmile.IsVisible = p.Mouth == MouthShape.Smile;

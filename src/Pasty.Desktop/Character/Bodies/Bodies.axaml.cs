@@ -13,6 +13,7 @@ public partial class BrickBody : CharacterBody
     public override Control Back => BackLayer;
     public override Control? Topper => TopLayer;
     public override double BlushInset => 4;   // keep the blush on the screen
+    public override double BrowHeadroom => 5; // brows stay on the screen
     public override double PortraitTop => 0;
 }
 
@@ -31,6 +32,7 @@ public partial class FloppyBody : CharacterBody
     public FloppyBody() => InitializeComponent();
     public override Control Back => BackLayer;
     public override double FaceOffsetY => 6;  // clear of the label's top stripe
+    public override double BrowHeadroom => 7;
     public override double HatDrop => 4;
     public override double PortraitTop => 24;
 }
@@ -42,6 +44,7 @@ public partial class HiliteBody : CharacterBody
     public override Control? Topper => TopLayer;
     public override double ArmInset => 9;     // a slim body: bring the arms in to meet it
     public override double BlushInset => 6;
+    public override double BrowHeadroom => 7;  // stay below the cap
     public override double HatDrop => 6;
     public override double PortraitTop => 6;
 }
@@ -70,6 +73,7 @@ public partial class MugsyBody : CharacterBody
     public override Control Back => BackLayer;
     public override bool HasLeftArm => false;  // the handle is on the left
     public override double FaceOffsetY => 8;   // below the rim
+    public override double BrowHeadroom => 6;  // stay off the coffee
     public override double HatDrop => 12;
     public override double PortraitTop => 8;
 
@@ -155,7 +159,8 @@ public partial class CoppieBody : CharacterBody
     public CoppieBody() => InitializeComponent();
     public override Control Back => BackLayer;
     public override Control? Topper => TopLayer;
-    public override double FaceOffsetY => 8;   // on the front panel, below the lid
+    public override double FaceOffsetY => 12;  // on the front panel, below the lid
+    public override double BrowHeadroom => 6;   // raised brows stop short of the lid
     public override double HatDrop => 12;
     public override double PortraitTop => 22;
 

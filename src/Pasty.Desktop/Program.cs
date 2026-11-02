@@ -28,7 +28,7 @@ internal static class Program
         }
 
         // Store screenshots need the full app (theme, templates) but not the companion or single-instance check.
-        if (args.Contains(StoreScreenshots.Argument))
+        if (args.Contains(StoreScreenshots.Argument) || args.Contains(StoreScreenshots.PreviewArgument))
             return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
 
         // One Pasty per desktop. Launching again just asks the running one to come say hi.
@@ -48,9 +48,21 @@ internal static class Program
     }
 
     // Also used by the Avalonia previewer.
-    public static AppBuilder BuildAvaloniaApp() =>
-        AppBuilder.Configure<App>()
-            .UsePlatformDetect()
+    public static AppBuilder BuildAvaloniaApp()
+    {
+        var builder = AppBuilder.Configure<App>().UsePlatformDetect();
+
+        // Pasty's windows are small, so drawing them on the CPU is cheap, and it skips loading the
+        // GPU stack (ANGLE/Direct3D, GL): about 100 MB less memory and less CPU at idle.
+        // PASTY_RENDERING=gpu brings the GPU renderer back if a machine ever draws oddly.
+        if (Environment.GetEnvironmentVariable("PASTY_RENDERING") != "gpu")
+        {
+            builder = builder
+                .With(new Win32PlatformOptions { RenderingMode = [Win32RenderingMode.Software] })
+                .With(new X11PlatformOptions { RenderingMode = [X11RenderingMode.Software] });
+        }
+
+        return builder
             .AfterSetup(_ => Dispatcher.UIThread.UnhandledException += (_, e) =>
             {
                 // A companion that runs all day must not die over one bad frame. Log and carry on.
@@ -58,6 +70,7 @@ internal static class Program
                 e.Handled = true;
             })
             .LogToTrace();
+    }
 
     internal static void LogInfo(string message) => Append("pasty.log", message);
 

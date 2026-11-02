@@ -1,3 +1,37 @@
+# Pasty the Desktop Companion 1.2.0 (in progress)
+
+**A new look, and pick your companion.**
+
+- **Pasty is now an orange glue stick** with a teal snap-on cap and a twist-up base, and a black-and-orange label at
+  Halloween. Prefer the original tube? Choose **Classic Pasty**.
+- **Eight characters** in Settings → Personality → Character: **Pasty** (default), **Classic Pasty**, **Brick** (a 90s brick phone),
+  **Sticky** (a sticky note), **Floppy** (a 3.5" floppy disk), **Mugsy** (a coffee mug whose steam shows its mood),
+  **Hilite** (a highlighter) and **Potato**. Switching is instant.
+- They all share Pasty's personality, animations and Halloween costume, with a few signature lines each, and the
+  AI brain plays whichever character you pick.
+- Under the hood: one shared animation rig, so every animation works for every character.
+
+**Living together.**
+
+- **Reminders.** Type "remind me in 20 minutes to stretch" or "remind me at 3pm to call mom" when you ask, or use
+  `/remind 1h30m check the oven`, `/reminders` and `/forget 2`. Reminders are saved, so they survive a restart, and
+  they come through snooze, Hide and quiet hours (they wait for full-screen apps to close).
+- **Break nudges** (Settings → General, off by default): a gentle reminder to get up after 45, 60, 90 or 120
+  minutes of continuous activity. Stepping away for 5 minutes resets the clock.
+- **Quiet hours** (Settings → General): no idle chatter, reactions or break nudges in the window you choose.
+  Answers and reminders still come through.
+- **Ask from anywhere**: a global shortcut opens the ask box from any app. Ctrl+Alt+P by default, or
+  Ctrl+Alt+Space or Ctrl+Shift+Alt+P. Windows only for now; on Linux, bind a key to `pasty`.
+- **Reduced motion** (Settings → General → Motion): follows Windows' *Animation effects* or GNOME's animation setting
+  by default. Pasty stays still (no bobbing, hopping or bat) and messages appear all at once.
+
+**Lighter.**
+
+- Pasty now draws on the CPU instead of loading the GPU stack, which suits its small windows. At idle that cut
+  private memory from about 145 MB to about 39 MB, and CPU use to about a third. If a machine ever draws oddly,
+  set `PASTY_RENDERING=gpu` to switch back.
+
+---
 # Pasty the Desktop Companion 1.1.2
 
 **First Microsoft Store release, published by Planet Archives.**

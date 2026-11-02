@@ -7,13 +7,15 @@ using Avalonia.Threading;
 using Pasty.Core;
 using Pasty.Core.Animation;
 using Pasty.Core.Seasons;
+using Pasty.Desktop.Character.Bodies;
 
 namespace Pasty.Desktop.Character;
 
 /// <summary>
-/// Draws Pasty. All motion comes from <see cref="PastyAnimator"/>; this control just copies each
-/// pose onto its transforms. The frame timer runs at whatever rate the animator asks for, and
-/// stops entirely while Pasty is hidden.
+/// The shared character rig. All motion comes from <see cref="PastyAnimator"/>; this control copies
+/// each pose onto its transforms. The look comes from a <see cref="CharacterBody"/> (Pasty, Brick,
+/// Potato…) hosted inside the rig. The frame timer runs at whatever rate the animator asks for, and
+/// stops entirely while the character is hidden.
 /// </summary>
 public partial class PastyAvatar : UserControl
 {
@@ -38,6 +40,17 @@ public partial class PastyAvatar : UserControl
     private readonly ScaleTransform MouthOpenScale = new();
     private readonly TranslateTransform BatMove = new();
     private readonly ScaleTransform BatWings = new();
+    // Per-body fit: arms, face, blush and witch hat nudged to suit the body's shape.
+    private readonly TranslateTransform LeftArmShift = new();
+    private readonly TranslateTransform RightArmShift = new();
+    private readonly TranslateTransform FaceShift = new();
+    private readonly TranslateTransform BlushLeftShift = new();
+    private readonly TranslateTransform BlushRightShift = new();
+    private readonly TranslateTransform HatShift = new();
+
+    private CharacterBody? _body;
+    private string _characterId = "";
+    private Season _season;
 
     public PastyAvatar()
     {
@@ -45,8 +58,13 @@ public partial class PastyAvatar : UserControl
 
         ShadowLayer.RenderTransform = ShadowScale;
         Figure.RenderTransform = new TransformGroup { Children = { Squash, Lean, Lift } };
-        RightArm.RenderTransform = ArmRotate;
+        LeftArm.RenderTransform = LeftArmShift;
+        RightArm.RenderTransform = new TransformGroup { Children = { ArmRotate, RightArmShift } };
         CapLayer.RenderTransform = new TransformGroup { Children = { CapRotate, CapLift } };
+        FaceLayer.RenderTransform = FaceShift;
+        BlushLeft.RenderTransform = BlushLeftShift;
+        BlushRight.RenderTransform = BlushRightShift;
+        WitchHat.RenderTransform = HatShift;
         EyesLayer.RenderTransform = EyeLids;
         Pupils.RenderTransform = Gaze;
         BrowLeft.RenderTransform = new TransformGroup { Children = { BrowLeftRotate, BrowLeftLift } };
@@ -55,6 +73,8 @@ public partial class PastyAvatar : UserControl
         Bat.RenderTransform = BatMove;
         BatWingsLayer.RenderTransform = BatWings;
         _frameTimer.Tick += (_, _) => Frame();
+
+        CharacterId = Pasty.Core.Characters.Characters.PastyId;
         ApplyPose(PastyPose.Rest);
     }
 
@@ -62,9 +82,33 @@ public partial class PastyAvatar : UserControl
 
     public PastyState State => Animator.State;
 
-    private Season _season;
+    /// <summary>Which character's body to wear (an id from Pasty.Core.Characters).</summary>
+    public string CharacterId
+    {
+        get => _characterId;
+        set
+        {
+            if (value == _characterId && _body is not null) return;
+            _characterId = value;
+            _body = BodyCatalog.Create(value);
+            var (back, top) = _body.Detach();
+            BodyHost.Children.Clear();
+            BodyHost.Children.Add(back);
+            TopperHost.Children.Clear();
+            if (top is not null) TopperHost.Children.Add(top);
 
-    /// <summary>Seasonal costume. Halloween: witch hat, fangs, orange-and-black label, and a bat friend.</summary>
+            LeftArm.IsVisible = _body.HasLeftArm;
+            LeftArmShift.X = _body.ArmInset;
+            RightArmShift.X = -_body.ArmInset;
+            FaceShift.Y = _body.FaceOffsetY;
+            BlushLeftShift.X = _body.BlushInset;
+            BlushRightShift.X = -_body.BlushInset;
+            HatShift.Y = _body.HatDrop;
+            Season = _season;
+        }
+    }
+
+    /// <summary>Seasonal costume. Halloween: witch hat (in place of the topper), fangs, and a bat friend.</summary>
     public Season Season
     {
         get => _season;
@@ -73,9 +117,8 @@ public partial class PastyAvatar : UserControl
             _season = value;
             var halloween = value == Season.Halloween;
             WitchHat.IsVisible = halloween;
-            ClassicCap.IsVisible = !halloween;
-            Band.Fill = new SolidColorBrush(Color.Parse(halloween ? "#FF7A1A" : "#FF6B57"));
-            BandSwirl.Stroke = new SolidColorBrush(Color.Parse(halloween ? "#1A1410" : "#FFFFFF"));
+            TopperHost.IsVisible = !halloween;
+            _body?.ApplySeason(value);
             Animator.BatEnabled = halloween;
             ApplyPose(Animator.Pose);
         }
@@ -93,7 +136,7 @@ public partial class PastyAvatar : UserControl
         Wake();
     }
 
-    /// <summary>Start or stop animating (stop while hidden: zero CPU when nobody can see Pasty).</summary>
+    /// <summary>Start or stop animating (stop while hidden: zero CPU when nobody can see the character).</summary>
     public bool RunAnimation
     {
         get => _frameTimer.IsEnabled;
@@ -165,18 +208,18 @@ public partial class PastyAvatar : UserControl
         BatMove.X = p.BatX;
         BatMove.Y = p.BatY;
         BatWings.ScaleY = 1 - 0.65 * p.BatFlap;
+
+        _body?.Animate(p, _clock.Elapsed.TotalSeconds);
     }
 
     /// <summary>
     /// The whole character, centred in a <paramref name="width"/>×<paramref name="height"/> image with
     /// <paramref name="padding"/> (fraction of the height) above and below. Used for Store tiles.
     /// </summary>
-    public static Bitmap RenderFullBody(int width, int height, double padding = 0.12, Season season = Season.None)
+    public static Bitmap RenderFullBody(int width, int height, double padding = 0.12, Season season = Season.None, string? characterId = null)
     {
-        var avatar = new PastyAvatar { Season = season };
-        var art = (Control)avatar.Content!;
-        avatar.Content = null;
-        // Artwork spans x 8–132 and y 5–183 (cap to shadow); fit that box.
+        var art = Detached(Create(season, characterId));
+        // Artwork spans x 8–132 and y 5–183 (topper to shadow); fit that box.
         const double artLeft = 8, artTop = 5, artWidth = 124, artHeight = 178;
         var scale = Math.Min(height * (1 - 2 * padding) / artHeight, width * (1 - 2 * padding) / artWidth);
         var offsetX = (width - artWidth * scale) / 2;
@@ -191,35 +234,50 @@ public partial class PastyAvatar : UserControl
                 new TranslateTransform(offsetX, offsetY),
             },
         };
-        var frame = new Canvas { Width = width, Height = height, ClipToBounds = true, Children = { art } };
-        frame.Measure(new Size(width, height));
-        frame.Arrange(new Rect(0, 0, width, height));
-
-        var bitmap = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
-        bitmap.Render(frame);
-        return bitmap;
+        return Render(art, width, height);
     }
 
-    /// <summary>A square portrait (cap, eyes, top of the body) for tray and window icons.</summary>
-    public static Bitmap RenderPortrait(int size, Season season = Season.None)
+    /// <summary>A square head-and-shoulders portrait for tray and window icons and the character picker.</summary>
+    public static Bitmap RenderPortrait(int size, Season season = Season.None, string? characterId = null)
     {
-        // The witch hat is taller than the cap, so the Halloween portrait frames a little higher.
+        var avatar = Create(season, characterId);
+        var body = avatar._body!;
+        // The witch hat is taller than any topper, so the Halloween portrait frames a little higher and wider.
         var halloween = season == Season.Halloween;
-        var scale = size / (halloween ? 124.0 : 104.0);
-        // Render the artwork canvas itself: an off-screen UserControl has no template applied and draws nothing.
-        var avatar = new PastyAvatar { Season = season };
-        var art = (Control)avatar.Content!;
-        avatar.Content = null;
+        var span = halloween ? 124.0 : 104.0;
+        var top = halloween ? -16 + body.HatDrop : body.PortraitTop;
+        var scale = size / span;
+        var art = Detached(avatar);
         art.RenderTransformOrigin = RelativePoint.TopLeft;
         art.RenderTransform = new TransformGroup
         {
-            Children = { new TranslateTransform(halloween ? -8 : -18, halloween ? 16 : -2), new ScaleTransform(scale, scale) },
+            Children = { new TranslateTransform(-(70 - span / 2), -top), new ScaleTransform(scale, scale) },
         };
-        var frame = new Canvas { Width = size, Height = size, ClipToBounds = true, Children = { art } };
-        frame.Measure(new Size(size, size));
-        frame.Arrange(new Rect(0, 0, size, size));
+        return Render(art, size, size);
+    }
 
-        var bitmap = new RenderTargetBitmap(new PixelSize(size, size), new Vector(96, 96));
+    private static PastyAvatar Create(Season season, string? characterId)
+    {
+        var avatar = new PastyAvatar();
+        if (characterId is not null) avatar.CharacterId = characterId;
+        avatar.Season = season;
+        return avatar;
+    }
+
+    // Render the artwork canvas itself: an off-screen UserControl has no template applied and draws nothing.
+    private static Control Detached(PastyAvatar avatar)
+    {
+        var art = (Control)avatar.Content!;
+        avatar.Content = null;
+        return art;
+    }
+
+    private static Bitmap Render(Control art, int width, int height)
+    {
+        var frame = new Canvas { Width = width, Height = height, ClipToBounds = true, Children = { art } };
+        frame.Measure(new Size(width, height));
+        frame.Arrange(new Rect(0, 0, width, height));
+        var bitmap = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
         bitmap.Render(frame);
         return bitmap;
     }

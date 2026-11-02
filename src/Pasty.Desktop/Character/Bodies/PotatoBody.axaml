@@ -1,0 +1,31 @@
+<bodies:CharacterBody xmlns="https://github.com/avaloniaui"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:bodies="using:Pasty.Desktop.Character.Bodies"
+                      x:Class="Pasty.Desktop.Character.Bodies.PotatoBody"
+                      Width="140" Height="184">
+    <!-- Potato: a cozy potato with sprouts on top. -->
+    <Canvas x:Name="BackLayer" Width="140" Height="184">
+        <Path Data="M 70,44 C 100,42 118,64 117,98 C 116,138 100,168 68,168 C 38,168 22,142 23,102 C 24,64 42,46 70,44 Z" Stroke="#7A5229" StrokeThickness="2">
+            <Path.Fill>
+                <RadialGradientBrush Center="40%,35%" GradientOrigin="40%,35%" RadiusX="70%" RadiusY="70%">
+                    <GradientStop Color="#E0B07A" Offset="0" />
+                    <GradientStop Color="#C48D55" Offset="0.6" />
+                    <GradientStop Color="#A06C38" Offset="1" />
+                </RadialGradientBrush>
+            </Path.Fill>
+        </Path>
+        <!-- Spots (well clear of the face) -->
+        <Ellipse Canvas.Left="30" Canvas.Top="122" Width="8" Height="5" Fill="#8E5E30" Opacity="0.55" />
+        <Ellipse Canvas.Left="100" Canvas.Top="132" Width="7" Height="5" Fill="#8E5E30" Opacity="0.55" />
+        <Ellipse Canvas.Left="58" Canvas.Top="150" Width="9" Height="5" Fill="#8E5E30" Opacity="0.55" />
+        <Ellipse Canvas.Left="96" Canvas.Top="54" Width="6" Height="4" Fill="#8E5E30" Opacity="0.55" />
+        <Ellipse Canvas.Left="34" Canvas.Top="66" Width="5" Height="4" Fill="#8E5E30" Opacity="0.55" />
+    </Canvas>
+
+    <!-- Sprouts -->
+    <Canvas x:Name="TopLayer" Width="140" Height="184">
+        <Path Data="M 70,46 C 69,38 70,33 72,29" Stroke="#4F8A34" StrokeThickness="2.5" StrokeLineCap="Round" />
+        <Path Data="M 72,30 C 64,21 55,25 57,32 C 63,35 68,34 72,30 Z" Fill="#6BB04C" Stroke="#3F7A2B" StrokeThickness="1.2" />
+        <Path Data="M 72,30 C 80,19 91,23 89,30 C 83,34 77,33 72,30 Z" Fill="#6BB04C" Stroke="#3F7A2B" StrokeThickness="1.2" />
+    </Canvas>
+</bodies:CharacterBody>

@@ -3,11 +3,19 @@ namespace Pasty.Core.Brains;
 /// <summary>Pasty's personality for AI brains, shared by every provider so Pasty sounds like Pasty everywhere.</summary>
 public static class PastyPrompt
 {
-    public const string System = """
-        You are Pasty, a desktop companion character on the user's computer: an anthropomorphic tube of paste
-        with a screw-cap hat and very expressive eyebrows. You're the spiritual successor to the classic
+    /// <summary>The prompt for the default character, Pasty.</summary>
+    public static string System => For(Characters.Characters.Default);
+
+    /// <summary>The prompt for a given companion: same personality and rules, its own name and look.</summary>
+    public static string For(Characters.CharacterInfo character) =>
+        $"""
+        You are {character.Name}, a desktop companion character on the user's computer: {character.Persona}.
+        You're one of the companions of Pasty the Desktop Companion, the spiritual successor to the classic
         90s office assistant, evolved for the modern era. You were born on Halloween 2026.
 
+        """ + Rules;
+
+    private const string Rules = """
         Personality: helpful, nostalgic, slightly obnoxious, technically competent, occasionally sarcastic.
         You're genuinely useful first and funny second; the sarcasm is affectionate, never mean.
 

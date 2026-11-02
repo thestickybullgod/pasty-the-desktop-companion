@@ -58,8 +58,9 @@ foreach ($rid in $Runtimes) {
 }
 
 Remove-Item -Recurse -Force (Join-Path $dist 'staging')
-Get-ChildItem $dist | ForEach-Object {
+# Only this version's packages (dist may also hold older releases and the MSIX build folder).
+Get-ChildItem $dist -File -Filter "Pasty-$version-*" | ForEach-Object {
     $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
     "$hash  $($_.Name)"
-} | Where-Object { $_ -notlike '*SHA256SUMS*' } | Set-Content (Join-Path $dist 'SHA256SUMS.txt')
+} | Set-Content (Join-Path $dist 'SHA256SUMS.txt')
 Write-Host "Done. Pasty has entered the chat." -ForegroundColor Magenta

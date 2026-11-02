@@ -46,7 +46,7 @@ public class PersonalityTests
         for (var i = 0; i < 100; i++)
         {
             var text = engine.IdleRemark().Text;
-            Assert.Equal(0, Lines.Idle.Single(l => l.Text == text).Spice);
+            Assert.Equal(0, Lines.Idle.Single(l => Pasty.Core.Characters.Characters.Default.Format(l.Text) == text).Spice);
         }
     }
 

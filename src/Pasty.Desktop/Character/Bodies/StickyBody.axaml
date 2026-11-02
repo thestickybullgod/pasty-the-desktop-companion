@@ -1,0 +1,28 @@
+<bodies:CharacterBody xmlns="https://github.com/avaloniaui"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:bodies="using:Pasty.Desktop.Character.Bodies"
+                      x:Class="Pasty.Desktop.Character.Bodies.StickyBody"
+                      Width="140" Height="184">
+    <!-- Sticky: a yellow sticky note with a curled corner. -->
+    <Canvas x:Name="BackLayer" Width="140" Height="184">
+        <Path Data="M 22,46 H 118 V 130 L 98,150 H 22 Z" Stroke="#C99A00" StrokeThickness="1.5" StrokeJoin="Round">
+            <Path.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Color="#FFE97A" Offset="0" />
+                    <GradientStop Color="#FFD84A" Offset="1" />
+                </LinearGradientBrush>
+            </Path.Fill>
+        </Path>
+        <!-- The glue strip along the top is a touch darker -->
+        <Rectangle Canvas.Left="23" Canvas.Top="47" Width="94" Height="9" Fill="#000000" Opacity="0.035" />
+        <!-- Curled corner -->
+        <Path Data="M 118,130 L 103,134 L 98,150 Z" Fill="#F0BE16" Stroke="#C99A00" StrokeThickness="1.5" StrokeJoin="Round" />
+        <!-- Ruled lines -->
+        <Path Data="M 32,126 H 86 M 32,138 H 76" Stroke="#E2B51E" StrokeThickness="1.5" StrokeLineCap="Round" Opacity="0.8" />
+    </Canvas>
+
+    <!-- A strip of tape -->
+    <Canvas x:Name="TopLayer" Width="140" Height="184">
+        <Path Data="M 51,41 L 87,37 L 89,51 L 53,55 Z" Fill="#FFFFFF" Opacity="0.65" Stroke="#D6D2C4" StrokeThickness="0.8" />
+    </Canvas>
+</bodies:CharacterBody>

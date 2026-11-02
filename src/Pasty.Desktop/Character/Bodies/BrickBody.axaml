@@ -1,0 +1,44 @@
+<bodies:CharacterBody xmlns="https://github.com/avaloniaui"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:bodies="using:Pasty.Desktop.Character.Bodies"
+                      x:Class="Pasty.Desktop.Character.Bodies.BrickBody"
+                      Width="140" Height="184">
+    <!-- Brick: a chunky 90s mobile phone. The face shows on its little green screen. -->
+    <Canvas x:Name="BackLayer" Width="140" Height="184">
+        <Rectangle Canvas.Left="32" Canvas.Top="34" Width="76" Height="138" RadiusX="14" RadiusY="14" Stroke="#1B1E23" StrokeThickness="2">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#5E656F" Offset="0" />
+                    <GradientStop Color="#484E57" Offset="0.5" />
+                    <GradientStop Color="#33383F" Offset="1" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <!-- Earpiece -->
+        <Rectangle Canvas.Left="58" Canvas.Top="40" Width="24" Height="4" RadiusX="2" RadiusY="2" Fill="#23272D" />
+        <!-- LCD screen -->
+        <Rectangle Canvas.Left="38" Canvas.Top="49" Width="64" Height="72" RadiusX="6" RadiusY="6" Fill="#B7D5A3" Stroke="#23272D" StrokeThickness="2.5" />
+        <Rectangle Canvas.Left="41" Canvas.Top="52" Width="58" Height="5" RadiusX="2" RadiusY="2" Fill="#FFFFFF" Opacity="0.22" />
+        <!-- Keypad -->
+        <Canvas>
+            <Rectangle Canvas.Left="44" Canvas.Top="127" Width="14" Height="7" RadiusX="3" RadiusY="3" Fill="#7A818B" />
+            <Rectangle Canvas.Left="63" Canvas.Top="127" Width="14" Height="7" RadiusX="3" RadiusY="3" Fill="#7A818B" />
+            <Rectangle Canvas.Left="82" Canvas.Top="127" Width="14" Height="7" RadiusX="3" RadiusY="3" Fill="#7A818B" />
+            <Rectangle Canvas.Left="44" Canvas.Top="137" Width="14" Height="7" RadiusX="3" RadiusY="3" Fill="#7A818B" />
+            <Rectangle Canvas.Left="63" Canvas.Top="137" Width="14" Height="7" RadiusX="3" RadiusY="3" Fill="#7A818B" />
+            <Rectangle Canvas.Left="82" Canvas.Top="137" Width="14" Height="7" RadiusX="3" RadiusY="3" Fill="#7A818B" />
+            <Rectangle Canvas.Left="44" Canvas.Top="147" Width="14" Height="7" RadiusX="3" RadiusY="3" Fill="#7A818B" />
+            <Rectangle Canvas.Left="63" Canvas.Top="147" Width="14" Height="7" RadiusX="3" RadiusY="3" Fill="#7A818B" />
+            <Rectangle Canvas.Left="82" Canvas.Top="147" Width="14" Height="7" RadiusX="3" RadiusY="3" Fill="#7A818B" />
+            <Rectangle Canvas.Left="44" Canvas.Top="157" Width="14" Height="7" RadiusX="3" RadiusY="3" Fill="#7A818B" />
+            <Rectangle Canvas.Left="63" Canvas.Top="157" Width="14" Height="7" RadiusX="3" RadiusY="3" Fill="#7A818B" />
+            <Rectangle Canvas.Left="82" Canvas.Top="157" Width="14" Height="7" RadiusX="3" RadiusY="3" Fill="#7A818B" />
+        </Canvas>
+    </Canvas>
+
+    <!-- Pull-up antenna -->
+    <Canvas x:Name="TopLayer" Width="140" Height="184">
+        <Rectangle Canvas.Left="86" Canvas.Top="6" Width="7" Height="32" RadiusX="3" RadiusY="3" Fill="#2A2E34" Stroke="#1B1E23" StrokeThickness="1" />
+        <Ellipse Canvas.Left="84" Canvas.Top="0" Width="11" Height="9" Fill="#3B4048" Stroke="#1B1E23" StrokeThickness="1" />
+    </Canvas>
+</bodies:CharacterBody>

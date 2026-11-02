@@ -1,0 +1,30 @@
+<bodies:CharacterBody xmlns="https://github.com/avaloniaui"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:bodies="using:Pasty.Desktop.Character.Bodies"
+                      x:Class="Pasty.Desktop.Character.Bodies.HiliteBody"
+                      Width="140" Height="184">
+    <!-- Hilite: a neon-yellow highlighter with a snap-on cap. -->
+    <Canvas x:Name="BackLayer" Width="140" Height="184">
+        <Path Data="M 46,44 H 94 Q 100,44 100,50 V 146 L 90,170 H 50 L 40,146 V 50 Q 40,44 46,44 Z" Stroke="#A69800" StrokeThickness="2" StrokeJoin="Round">
+            <Path.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#FAF66E" Offset="0" />
+                    <GradientStop Color="#F3ED3C" Offset="0.45" />
+                    <GradientStop Color="#DAD11B" Offset="1" />
+                </LinearGradientBrush>
+            </Path.Fill>
+        </Path>
+        <!-- Shine -->
+        <Rectangle Canvas.Left="45" Canvas.Top="52" Width="4" Height="64" RadiusX="2" RadiusY="2" Fill="#FFFFFF" Opacity="0.45" />
+        <!-- Grip band -->
+        <Rectangle Canvas.Left="41" Canvas.Top="128" Width="58" Height="16" Fill="#2F3A48" />
+        <Path Data="M 50,128 L 46,144 M 61,128 L 57,144 M 72,128 L 68,144 M 83,128 L 79,144 M 94,128 L 90,144" Stroke="#4A5668" StrokeThickness="2" />
+    </Canvas>
+
+    <!-- Cap with pocket clip -->
+    <Canvas x:Name="TopLayer" Width="140" Height="184">
+        <Rectangle Canvas.Left="38" Canvas.Top="12" Width="64" Height="38" RadiusX="8" RadiusY="8" Fill="#2F3A48" Stroke="#1B222B" StrokeThickness="2" />
+        <Rectangle Canvas.Left="40" Canvas.Top="44" Width="60" Height="4" Fill="#F3ED3C" Opacity="0.9" />
+        <Rectangle Canvas.Left="92" Canvas.Top="16" Width="7" Height="44" RadiusX="3" RadiusY="3" Fill="#4A5668" Stroke="#1B222B" StrokeThickness="1.2" />
+    </Canvas>
+</bodies:CharacterBody>

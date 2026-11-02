@@ -12,6 +12,14 @@ public enum Chattiness
     Relentless,
 }
 
+public enum MotionPreference
+{
+    /// <summary>Follow the operating system's "reduce animations" setting.</summary>
+    Auto,
+    Reduced,
+    Full,
+}
+
 public enum BrainKind
 {
     Offline,
@@ -44,12 +52,24 @@ public sealed class PastySettings
     public bool HideWhenFullScreen { get; set; } = true;
     /// <summary>Doze off after this many minutes without keyboard/mouse input. 0 = never.</summary>
     public int SleepAfterMinutes { get; set; } = 10;
+    /// <summary>No unprompted remarks between these times (reminders and answers still come through).</summary>
+    public bool QuietHoursEnabled { get; set; }
+    public TimeSpan QuietHoursStart { get; set; } = TimeSpan.FromHours(22);
+    public TimeSpan QuietHoursEnd { get; set; } = TimeSpan.FromHours(8);
+    /// <summary>Calmer animations: no bobbing, hopping or swaying. Auto follows the OS setting.</summary>
+    public MotionPreference Motion { get; set; } = MotionPreference.Auto;
+    /// <summary>Suggest a break after this many minutes of continuous activity. 0 = off.</summary>
+    public int BreakNudgeMinutes { get; set; }
+    /// <summary>Global keyboard shortcut that opens the ask box from anywhere ("" = off). Windows only.</summary>
+    public string AskHotkey { get; set; } = "Ctrl+Alt+P";
 
     // Personality
     public Chattiness Chattiness { get; set; } = Chattiness.Polite;
     /// <summary>0 = saintly, 100 = insufferable.</summary>
     public int Sarcasm { get; set; } = 50;
     public bool TimeOfDayGreetings { get; set; } = true;
+    /// <summary>Which companion is on the desktop (see Characters.All). Pasty by default.</summary>
+    public string Character { get; set; } = Characters.Characters.PastyId;
     /// <summary>Costumes and seasonal lines (Halloween Edition). Auto = when the calendar says so.</summary>
     public Seasons.SeasonalMode Seasonal { get; set; } = Seasons.SeasonalMode.Auto;
 

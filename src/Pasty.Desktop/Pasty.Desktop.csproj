@@ -17,8 +17,8 @@
     <RootNamespace>Pasty.Desktop</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <Version>1.1.2</Version>
-    <InformationalVersion>1.1.2</InformationalVersion>
+    <Version>1.2.0</Version>
+    <InformationalVersion>1.2.0</InformationalVersion>
     <Product>Pasty the Desktop Companion</Product>
     <AssemblyTitle>Pasty the Desktop Companion</AssemblyTitle>
     <Description>Pasty the Desktop Companion. Born on Halloween 2026.</Description>

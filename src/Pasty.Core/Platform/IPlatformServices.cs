@@ -26,6 +26,9 @@ public interface IPlatformServices
 
     bool SupportsActiveAppAwareness { get; }
 
+    /// <summary>True when the OS asks apps to reduce animation (Windows "Animation effects" off, GNOME animations off).</summary>
+    bool PrefersReducedMotion { get; }
+
     IStartupRegistration Startup { get; }
 
     ISecretStore Secrets { get; }

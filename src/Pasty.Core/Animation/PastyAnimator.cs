@@ -47,12 +47,20 @@ public sealed class PastyAnimator
 
     private bool BatFlying => _batAge < BatFlightSeconds;
 
-    public int RecommendedFps => IsReacting ? 40 : BatFlying ? 30 : State switch
-    {
-        PastyState.Sleeping => 8,
-        PastyState.Idle => 20,
-        _ => 30,
-    };
+    /// <summary>
+    /// Calmer animation for people who find motion distracting or uncomfortable: expressions, blinking
+    /// and talking stay, but the body doesn't bob, hop, sway, squash or wave, and the bat stays home.
+    /// </summary>
+    public bool ReducedMotion { get; set; }
+
+    public int RecommendedFps => ReducedMotion
+        ? State switch { PastyState.Sleeping => 4, PastyState.Talking => 15, _ => IsReacting ? 15 : 10 }
+        : IsReacting ? 40 : BatFlying ? 30 : State switch
+        {
+            PastyState.Sleeping => 8,
+            PastyState.Idle => 20,
+            _ => 30,
+        };
 
     public void SetState(PastyState state)
     {
@@ -171,8 +179,17 @@ public sealed class PastyAnimator
             }
         }
 
+        if (ReducedMotion)
+        {
+            // Keep the face; still the body. A wave becomes a raised hand, sleep's Zzz stops pulsing.
+            bob = lean = squash = breathe = capTilt = capLift = 0;
+            if (arm != 0) arm = -105;
+            if (State == PastyState.Sleeping) zzz = 0.6;
+            p.MouthOpen = State == PastyState.Talking ? 0.5 + 0.5 * Math.Abs(Math.Sin(_time * 5)) : 1;
+        }
+
         p.BodyY = bob;
-        p.Lean = Lerp(p.Lean, lean, State == PastyState.Thinking || _reaction == PastyReaction.Annoyed ? 1 : Approach(dt, 8));
+        p.Lean = Lerp(p.Lean, lean, !ReducedMotion && (State == PastyState.Thinking || _reaction == PastyReaction.Annoyed) ? 1 : Approach(dt, 8));
         p.Opacity = opacity;
         p.SquashX = 1 + squash;
         p.SquashY = 1 - squash + breathe;
@@ -197,7 +214,7 @@ public sealed class PastyAnimator
         {
             _batAge += dt;
         }
-        else if (BatEnabled && State is PastyState.Idle or PastyState.Talking)
+        else if (BatEnabled && !ReducedMotion && State is PastyState.Idle or PastyState.Talking)
         {
             _nextBat -= dt;
             if (_nextBat <= 0)

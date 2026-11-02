@@ -75,6 +75,28 @@ internal sealed class LinuxPlatform : IPlatformServices, IDisposable
 
     public bool SupportsActiveAppAwareness { get; }
 
+    /// <summary>The desktop's "enable animations" setting: MATE's or GNOME's (read once; other desktops: assume full motion).</summary>
+    public bool PrefersReducedMotion => _reducedMotion.Value;
+
+    private readonly Lazy<bool> _reducedMotion = new(() =>
+    {
+        var mate = (Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP") ?? "").Contains("MATE", StringComparison.OrdinalIgnoreCase);
+        var key = mate ? "org.mate.interface gtk-enable-animations" : "org.gnome.desktop.interface enable-animations";
+        try
+        {
+            using var p = Process.Start(new ProcessStartInfo("gsettings", "get " + key)
+            {
+                RedirectStandardOutput = true, RedirectStandardError = true, UseShellExecute = false,
+            });
+            if (p is null || !p.WaitForExit(2000)) return false;
+            return p.StandardOutput.ReadToEnd().Trim() == "false";
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            return false;
+        }
+    });
+
     public IStartupRegistration Startup { get; } = new XdgAutostart();
 
     public ISecretStore Secrets { get; } = new LinuxSecretStore();

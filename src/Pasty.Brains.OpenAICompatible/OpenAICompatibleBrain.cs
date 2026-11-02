@@ -21,12 +21,15 @@ public sealed class OpenAICompatibleBrain : IPastyBrain, IDisposable
     private readonly HttpClient _http;
     private readonly Uri _endpoint;
     private readonly string _model;
+    private readonly string _systemPrompt;
     private readonly bool _isLocal;
     private readonly List<JsonObject> _history = [];
     private readonly SemaphoreSlim _gate = new(1, 1);
 
-    public OpenAICompatibleBrain(string name, string endpoint, string model, string? apiKey, HttpMessageHandler? handler = null)
+    /// <param name="systemPrompt">Personality prompt for the selected character; defaults to Pasty.</param>
+    public OpenAICompatibleBrain(string name, string endpoint, string model, string? apiKey, HttpMessageHandler? handler = null, string? systemPrompt = null)
     {
+        _systemPrompt = systemPrompt ?? PastyPrompt.System;
         Name = name;
         _model = model;
         _endpoint = new Uri(endpoint.TrimEnd('/') + "/");
@@ -58,7 +61,7 @@ public sealed class OpenAICompatibleBrain : IPastyBrain, IDisposable
                 _history.Clear();
 
             var user = Message("user", PastyPrompt.WithContext(userText, context));
-            var messages = new JsonArray { Message("system", PastyPrompt.System) };
+            var messages = new JsonArray { Message("system", _systemPrompt) };
             foreach (var m in _history) messages.Add(m.DeepClone());
             messages.Add(user.DeepClone());
 

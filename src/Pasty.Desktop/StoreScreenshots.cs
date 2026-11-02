@@ -55,6 +55,7 @@ internal static class StoreScreenshots
         Directory.CreateDirectory(directory);
         foreach (var scene in Scenes)
             await RenderAsync(Build(scene), Width, Height, System.IO.Path.Combine(directory, scene.File));
+        await RenderAsync(BuildLineup(), Width, Height, System.IO.Path.Combine(directory, "5-pick-your-companion.png"));
 
         // Store key art: 9:16 poster and 1:1 box art, in their own folder next to the screenshots.
         var art = System.IO.Path.Combine(directory, "..", "art");
@@ -81,6 +82,81 @@ internal static class StoreScreenshots
         using (var file = File.Create(path))
             bitmap.Save(file, new PngBitmapEncoderOptions());
         host.Close();
+    }
+
+    public const string PreviewArgument = "--render-character-preview";
+
+    /// <summary>
+    /// <c>Pasty --render-character-preview &lt;dir&gt; id1,id2</c>: each body in four poses (rest, wave,
+    /// smug, Halloween) for comparing character designs. Writes <c>character-preview.png</c>.
+    /// </summary>
+    public static async Task RenderPreviewAsync(string directory, string[] ids)
+    {
+        Directory.CreateDirectory(directory);
+        IBrush Solid(string color) => new SolidColorBrush(Color.Parse(color));
+        var rows = new StackPanel { Spacing = 24, Margin = new Thickness(40) };
+        var poses = new (string Label, PastyReaction Reaction, Season Season)[]
+        {
+            ("rest", PastyReaction.None, Season.None),
+            ("wave", PastyReaction.Wave, Season.None),
+            ("smug", PastyReaction.Smug, Season.None),
+            ("halloween", PastyReaction.Happy, Season.Halloween),
+        };
+        foreach (var id in ids)
+        {
+            var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 30 };
+            row.Children.Add(new TextBlock { Text = id, FontSize = 28, FontWeight = FontWeight.SemiBold, Width = 180, VerticalAlignment = VerticalAlignment.Center, Foreground = Solid("#123B37") });
+            foreach (var (label, reaction, season) in poses)
+            {
+                var avatar = new PastyAvatar { CharacterId = id, Margin = new Thickness(12, 46, 12, 0), ClipToBounds = false };
+                avatar.Season = season;
+                avatar.ShowPose(reaction == PastyReaction.None ? PastyPose.Rest : PoseFor(reaction, season));
+                var cell = new StackPanel { Spacing = 4 };
+                cell.Children.Add(new LayoutTransformControl { LayoutTransform = new ScaleTransform(1.5, 1.5), Child = avatar, ClipToBounds = false });
+                cell.Children.Add(new TextBlock { Text = label, FontSize = 18, Foreground = Solid("#2E4A47"), HorizontalAlignment = HorizontalAlignment.Center });
+                row.Children.Add(cell);
+            }
+            rows.Children.Add(row);
+        }
+        var width = 1280;
+        var height = 80 + ids.Length * 360;
+        var page = new Grid { Width = width, Height = height, Background = Solid("#F6F3EA"), Children = { rows } };
+        await RenderAsync(page, width, height, System.IO.Path.Combine(directory, "character-preview.png"));
+    }
+
+    /// <summary>All the companions side by side, each with its name: "Pick your companion".</summary>
+    private static Control BuildLineup()
+    {
+        IBrush Solid(string color) => new SolidColorBrush(Color.Parse(color));
+        var row = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center, Spacing = 22 };
+        var reactions = new[] { PastyReaction.Wave, PastyReaction.Smug, PastyReaction.Happy, PastyReaction.Surprised, PastyReaction.Happy, PastyReaction.Smug, PastyReaction.Happy };
+        var i = 0;
+        foreach (var info in Pasty.Core.Characters.Characters.All)
+        {
+            var avatar = new PastyAvatar { CharacterId = info.Id, Margin = new Thickness(12, 46, 12, 0), ClipToBounds = false };
+            avatar.ShowPose(PoseFor(reactions[i++ % reactions.Length], Season.None) with { CapTilt = 0, CapLift = 0 });
+            var cell = new StackPanel { Spacing = 6 };
+            cell.Children.Add(new LayoutTransformControl { LayoutTransform = new ScaleTransform(1.3, 1.3), Child = avatar, ClipToBounds = false });
+            cell.Children.Add(new TextBlock { Text = info.Title, FontSize = 34, FontWeight = FontWeight.SemiBold, Foreground = Solid("#123B37"), HorizontalAlignment = HorizontalAlignment.Center });
+            row.Children.Add(cell);
+        }
+
+        var layout = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Spacing = 40 };
+        layout.Children.Add(new TextBlock { Text = "Pick your companion", FontSize = 76, FontWeight = FontWeight.Bold, Foreground = Solid("#123B37"), HorizontalAlignment = HorizontalAlignment.Center });
+        layout.Children.Add(row);
+        layout.Children.Add(new TextBlock { Text = $"Same personality, {Pasty.Core.Characters.Characters.All.Count switch { 8 => "eight", 7 => "seven", var n => n.ToString() }} looks. Switch any time in Settings.", FontSize = 34, Foreground = Solid("#2E4A47"), HorizontalAlignment = HorizontalAlignment.Center });
+
+        return new Grid
+        {
+            Width = Width, Height = Height,
+            Background = new LinearGradientBrush
+            {
+                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                EndPoint = new RelativePoint(1, 1, RelativeUnit.Relative),
+                GradientStops = { new GradientStop(Color.Parse("#E3F4F1"), 0), new GradientStop(Color.Parse("#FFF6DD"), 1) },
+            },
+            Children = { layout },
+        };
     }
 
     /// <summary>

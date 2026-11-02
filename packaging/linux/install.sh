@@ -1,7 +1,7 @@
 #!/bin/sh
 # Installs Pasty for the current user. No root needed.
-#   ./install.sh            install (or upgrade)
-#   ./install.sh --uninstall
+#   sh install.sh            install (or upgrade)
+#   sh install.sh --uninstall
 set -eu
 
 APP_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/pasty"

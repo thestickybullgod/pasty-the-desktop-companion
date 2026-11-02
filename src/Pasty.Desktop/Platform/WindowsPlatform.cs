@@ -17,6 +17,17 @@ internal sealed class WindowsPlatform : IPlatformServices
 
     public bool SupportsActiveAppAwareness => true;
 
+    /// <summary>Settings → Accessibility → Visual effects → Animation effects.</summary>
+    public bool PrefersReducedMotion
+    {
+        get
+        {
+            const uint SPI_GETCLIENTAREAANIMATION = 0x1042;
+            var enabled = true;
+            return SystemParametersInfo(SPI_GETCLIENTAREAANIMATION, 0, ref enabled, 0) && !enabled;
+        }
+    }
+
     /// <summary>
     /// Store (MSIX) installs can't use the Run key: Windows virtualizes registry writes for packaged
     /// apps, so the entry would silently do nothing. They declare a startup task in the package instead.
@@ -185,6 +196,7 @@ internal sealed class WindowsPlatform : IPlatformServices
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] private static extern int GetCurrentPackageFullName(ref int length, char[]? name);
     [DllImport("user32.dll")] private static extern bool GetLastInputInfo(ref LASTINPUTINFO info);
+    [DllImport("user32.dll")] private static extern bool SystemParametersInfo(uint action, uint param, ref bool value, uint winIni);
     [DllImport("shell32.dll")] private static extern int SHQueryUserNotificationState(out int state);
     [DllImport("user32.dll")] private static extern bool GetCursorPos(out POINT point);
     [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();

@@ -1,0 +1,55 @@
+<bodies:CharacterBody xmlns="https://github.com/avaloniaui"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:bodies="using:Pasty.Desktop.Character.Bodies"
+                      x:Class="Pasty.Desktop.Character.Bodies.GlueStickBody"
+                      Width="140" Height="184">
+    <!-- Pasty, redesigned as a glue stick: a smooth capped cylinder on a twist-up base. -->
+    <bodies:CharacterBody.Resources>
+        <StreamGeometry x:Key="StickShape">M 30,58 Q 30,46 42,46 H 98 Q 110,46 110,58 V 160 H 30 Z</StreamGeometry>
+        <StreamGeometry x:Key="StickClip">M 30,58 Q 30,46 42,46 H 98 Q 110,46 110,58 V 160 H 30 Z</StreamGeometry>
+        <SolidColorBrush x:Key="Outline" Color="#7D8896" />
+    </bodies:CharacterBody.Resources>
+
+    <Canvas x:Name="BackLayer" Width="140" Height="184">
+        <!-- Twist-up base -->
+        <Rectangle Canvas.Left="26" Canvas.Top="156" Width="88" Height="19" RadiusX="7" RadiusY="7" Fill="#E3E7EC" Stroke="{StaticResource Outline}" StrokeThickness="2" />
+        <Path Stroke="#B4BCC6" StrokeThickness="1.5" StrokeLineCap="Round"
+              Data="M 36,160 V 171 M 45,160 V 171 M 54,160 V 171 M 63,160 V 171 M 72,160 V 171 M 81,160 V 171 M 90,160 V 171 M 99,160 V 171 M 104,160 V 171" />
+
+        <!-- Stick -->
+        <Path x:Name="Stick" Data="{StaticResource StickShape}" Stroke="#B0531B" StrokeThickness="2">
+            <Path.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#F57A2A" Offset="0" />
+                    <GradientStop Color="#FFA45C" Offset="0.35" />
+                    <GradientStop Color="#FF9346" Offset="0.7" />
+                    <GradientStop Color="#DB6417" Offset="1" />
+                </LinearGradientBrush>
+            </Path.Fill>
+        </Path>
+
+        <!-- Label: coral wrap with the paste swirl, clipped to the stick -->
+        <Canvas Width="140" Height="184" Clip="{StaticResource StickClip}">
+            <Rectangle x:Name="Band" Canvas.Left="20" Canvas.Top="123" Width="100" Height="26" Fill="#FFF4E2" />
+            <Rectangle Canvas.Left="20" Canvas.Top="123" Width="100" Height="3" Fill="#FFFFFF" Opacity="0.35" />
+            <Rectangle Canvas.Left="20" Canvas.Top="146" Width="100" Height="3" Fill="#000000" Opacity="0.08" />
+            <Path x:Name="BandSwirl" Data="M 40,136 q 6,-7 12,0 t 12,0 t 12,0 t 12,0 t 12,0" Stroke="#14A99A" StrokeThickness="3" StrokeLineCap="Round" />
+        </Canvas>
+    </Canvas>
+
+    <!-- Cap: full width, softly domed, teal -->
+    <Canvas x:Name="TopLayer" Width="140" Height="184">
+        <Path Data="M 28,50 V 30 Q 28,12 50,12 H 90 Q 112,12 112,30 V 50 Q 112,54 108,54 H 32 Q 28,54 28,50 Z" Stroke="#0B6B62" StrokeThickness="2">
+            <Path.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#2CC5B5" Offset="0" />
+                    <GradientStop Color="#16AB9C" Offset="0.5" />
+                    <GradientStop Color="#0E857A" Offset="1" />
+                </LinearGradientBrush>
+            </Path.Fill>
+        </Path>
+        <!-- Rim and a soft highlight -->
+        <Rectangle Canvas.Left="29" Canvas.Top="45" Width="82" Height="4" Fill="#0B6B62" Opacity="0.45" />
+        <Path Data="M 40,22 Q 46,17 60,17" Stroke="#9AF0E5" StrokeThickness="3" StrokeLineCap="Round" Opacity="0.7" />
+    </Canvas>
+</bodies:CharacterBody>

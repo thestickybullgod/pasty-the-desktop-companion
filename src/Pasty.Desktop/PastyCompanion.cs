@@ -6,13 +6,16 @@ using Pasty.Brains.Claude;
 using Pasty.Brains.OpenAICompatible;
 using Pasty.Core;
 using Pasty.Core.Brains;
+using Pasty.Core.Characters;
 using Pasty.Core.Commands;
 using Pasty.Core.Context;
 using Pasty.Core.Personality;
 using Pasty.Core.Platform;
 using Pasty.Core.Plugins;
+using Pasty.Core.Reminders;
 using Pasty.Core.Seasons;
 using Pasty.Core.Settings;
+using Pasty.Core.Wellbeing;
 using Pasty.Desktop.Character;
 using Pasty.Desktop.Services;
 
@@ -38,6 +41,10 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
     private readonly PresenceMonitor _presence;
     private readonly DispatcherTimer _heartbeat = new() { Interval = TimeSpan.FromSeconds(20) };
     private readonly List<string> _pluginErrors = [];
+    private readonly ReminderBook _reminders = new(Path.Combine(SettingsStore.DefaultDirectory, "reminders.json"));
+    private readonly RemindersPlugin _remindersPlugin;
+    private readonly BreakTracker _breaks = new();
+    private GlobalHotkey? _hotkey;
     private TrayIcon? _tray;
     private SettingsWindow? _settingsWindow;
     private CancellationTokenSource? _pendingAsk;
@@ -59,6 +66,8 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
         _offline = new OfflineBrain(_personality);
         _conversation = new PastyConversation(Commands, _offline);
         _conversation.Interceptors.Add(_personality.TryEasterEgg);
+        _remindersPlugin = new RemindersPlugin(_reminders);
+        _conversation.Interceptors.Add(_remindersPlugin.TryHandleNatural);   // "remind me in 20 minutes to…"
 
         _window = new CharacterWindow(platform);
         _bubble.AnchorProvider = () => _window.IsVisible ? (_window.BubbleAnchor, _window.WorkArea) : null;
@@ -99,12 +108,15 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
         _window.Avatar.RunAnimation = true;
         _window.TrackCursor = true;
 
-        _tray = new TrayIcon { ToolTipText = "Pasty" };
+        _tray = new TrayIcon { ToolTipText = Character.Name };
         _tray.Clicked += (_, _) => Summon();
         _tray.Menu = BuildNativeMenu();
         TrayIcon.SetIcons(Application.Current!, [_tray]);
 
-        UpdateSeason();
+        _hotkey = new GlobalHotkey(_window);
+        _hotkey.Pressed += BeginAsk;
+
+        UpdateLook();
         ApplySettings(_settings, save: false);
         _presence.Start();
         _heartbeat.Start();
@@ -113,6 +125,8 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
         var delay = launchedAtStartup ? TimeSpan.FromSeconds(8) : TimeSpan.FromSeconds(0.8);
         DispatcherTimer.RunOnce(() =>
         {
+            // Quiet hours: arrive without a word (the first-run welcome still explains the basics).
+            if (_settings.FirstRunComplete && QuietHours.IsQuiet(_settings, DateTime.Now)) return;
             Speak(_personality.Greeting(), prompted: true);
             if (!_settings.FirstRunComplete)
             {
@@ -130,6 +144,7 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
     {
         var brainChanged = settings.Brain != _settings.Brain
             || settings.ProfileFor(settings.Brain) != _settings.ProfileFor(settings.Brain)
+            || settings.Character != _settings.Character   // the AI plays the selected character
             || (_conversation.Brain is null) == (settings.Brain != BrainKind.Offline);
 
         // The settings window edits a copy; don't let it roll back state that changed meanwhile.
@@ -148,7 +163,15 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
         _window.ApplyScale(settings.Scale);
         _presence.AwayAfter = TimeSpan.FromMinutes(Math.Max(0, settings.SleepAfterMinutes));
         _context.Apply(settings);
-        UpdateSeason();
+        UpdateLook();
+
+        ReducedMotion = settings.Motion == MotionPreference.Reduced
+            || (settings.Motion == MotionPreference.Auto && Platform.PrefersReducedMotion);
+        _window.Avatar.Animator.ReducedMotion = ReducedMotion;
+        _bubble.InstantText = ReducedMotion;
+
+        _hotkey?.Set(settings.AskHotkey);
+        if (_tray is not null) _tray.Menu = BuildNativeMenu();   // the Ask entry shows the shortcut
 
         if (brainChanged)
         {
@@ -190,11 +213,12 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
         if (provider.NeedsApiKey && string.IsNullOrWhiteSpace(key)) return null;
         if (string.IsNullOrWhiteSpace(model)) return null;
 
+        var prompt = PastyPrompt.For(Characters.Get(settings.Character));
         if (provider.Kind == BrainKind.Claude)
-            return new ClaudeBrain(key!, model);
+            return new ClaudeBrain(key!, model, prompt);
         if (endpoint is null || !Uri.TryCreate(endpoint, UriKind.Absolute, out _))
             return null;
-        return new OpenAICompatibleBrain(provider.ShortName, endpoint, model, key);
+        return new OpenAICompatibleBrain(provider.ShortName, endpoint, model, key, systemPrompt: prompt);
     }
 
     public void OpenSettings()
@@ -209,6 +233,12 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
         _settingsWindow.Show();
         _settingsWindow.Activate();
     }
+
+    /// <summary>True when animation is toned down (the user's choice, or the OS setting under Auto).</summary>
+    public bool ReducedMotion { get; private set; }
+
+    /// <summary>Why the ask shortcut isn't working (taken by another app, not on Windows), or null.</summary>
+    public string? HotkeyProblem => _hotkey?.Problem;
 
     /// <summary>Someone launched Pasty again while it was running: come forward and listen.</summary>
     public void OpenAskFromOutside() => BeginAsk();
@@ -236,7 +266,8 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
             _window.TrackCursor = true;
 
         _lastSpoke = DateTime.Now;
-        _bubble.ShowMessage(utterance.Text);
+        // Lines may name the character ("{name} says hi"); fill them in for whoever is on duty.
+        _bubble.ShowMessage(Character.Format(utterance.Text));
         _window.Avatar.SetState(PastyState.Talking);
         _window.Avatar.React(utterance.Reaction);
     }
@@ -247,7 +278,8 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
         && !_bubble.IsAsking
         && _pendingAsk is null
         && _window.Avatar.State is PastyState.Idle
-        && DateTime.Now - _lastSpoke >= MinGapBetweenRemarks;
+        && DateTime.Now - _lastSpoke >= MinGapBetweenRemarks
+        && !QuietHours.IsQuiet(_settings, DateTime.Now);   // replies and reminders still get through
 
     private void OnContextSignal(ContextSignal signal)
     {
@@ -263,7 +295,7 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
         {
             var wasHalloweenNight = SeasonCalendar.IsHalloweenNight(_today);
             _today = DateTime.Today;
-            UpdateSeason();
+            UpdateLook();
             if (wasHalloweenNight && _season == Season.Halloween)
             {
                 Speak(HalloweenLines.Midnight, prompted: true);
@@ -279,22 +311,62 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
             return;
         }
 
+        var now = DateTime.Now;
+        if (DeliverDueReminders(now)) return;
+
+        // Tracked even when Pasty can't speak, so a break taken during a full-screen game still counts.
+        if (_breaks.IsDue(now, Platform.GetIdleTime(), _settings.BreakNudgeMinutes) && CanVolunteer())
+        {
+            _breaks.Nudged(now);
+            Speak(_personality.BreakNudge(_breaks.ActiveFor(now)), prompted: false);
+            return;
+        }
+
         if (_personality.IdleInterval is { } interval && DateTime.Now - _lastSpoke >= interval && CanVolunteer())
             Speak(_personality.IdleRemark(), prompted: false);
     }
 
-    private void UpdateSeason()
+    /// <summary>
+    /// Says any reminders that are due. They come through snooze, Hide and quiet hours (the user asked
+    /// for them), but wait while a full-screen app is up or the user is typing a question.
+    /// </summary>
+    private bool DeliverDueReminders(DateTime now)
+    {
+        if (_reminders.NextDue is not { } next || now < next) return false;
+        if (_bubble.IsAsking || _pendingAsk is not null) return false;
+        if (_settings.HideWhenFullScreen && _presence.IsFullScreenActive) return false;
+
+        var due = _reminders.TakeDue(now);
+        if (due.Count == 0) return false;
+        Summon();
+        if (_window.Avatar.State == PastyState.Sleeping) _window.Avatar.SetState(PastyState.Idle);
+        Speak(_personality.ReminderDue(string.Join(" · ", due.Select(r => r.Text))), prompted: true);
+        return true;
+    }
+
+    /// <summary>The companion currently on the desktop.</summary>
+    public CharacterInfo Character => _personality.Character;
+
+    /// <summary>Applies the selected character and the seasonal costume to the avatar, bubble and icons.</summary>
+    private void UpdateLook()
     {
         var season = _personality.Season;
-        if (season == _season && _tray?.Icon is not null) return;
+        var character = Character;
+        if (season == _season && character.Id == _window.Avatar.CharacterId && _tray?.Icon is not null) return;
         _season = season;
 
+        _window.Avatar.CharacterId = character.Id;
         _window.Avatar.Season = season;
         _bubble.Spooky = season == Season.Halloween;
 
-        var icon = new WindowIcon(PastyAvatar.RenderPortrait(64, season));
+        var icon = new WindowIcon(PastyAvatar.RenderPortrait(64, season, character.Id));
         _window.Icon = icon;
-        if (_tray is not null) _tray.Icon = icon;
+        if (_tray is not null)
+        {
+            _tray.Icon = icon;
+            _tray.Menu = BuildNativeMenu();   // menu entries use the character's name
+        }
+        UpdateVisibility();
     }
 
     // ---------------------------------------------------------------- asking
@@ -362,9 +434,9 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
         }
 
         if (_tray is not null)
-            _tray.ToolTipText = _snoozedUntil is { } until ? $"Pasty (snoozing until {until:t})"
-                : _hiddenByUser ? "Pasty (hidden; click to bring back)"
-                : "Pasty";
+            _tray.ToolTipText = _snoozedUntil is { } until ? $"{Character.Name} (snoozing until {until:t})"
+                : _hiddenByUser ? $"{Character.Name} (hidden; click to bring back)"
+                : Character.Name;
         if (_tray is not null) _tray.Menu = BuildNativeMenu();
     }
 
@@ -468,7 +540,7 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
     {
         var entries = new List<MenuEntry>
         {
-            new("Ask Pasty…", BeginAsk),
+            new($"Ask {Character.Name}…" + (_hotkey?.Active is { } keys ? $" ({keys})" : ""), BeginAsk),
             new("Tell me a joke", () => { Summon(); Speak(_personality.Joke(), prompted: true); }),
         };
         if (_season == Season.Halloween)
@@ -483,8 +555,8 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
                 "See you tomorrow! Don't do anything I wouldn't do.")),
         ]));
         entries.Add(_window.IsVisible
-            ? new("Hide Pasty", () => { _hiddenByUser = true; UpdateVisibility(); })
-            : new("Show Pasty", Summon));
+            ? new($"Hide {Character.Name}", () => { _hiddenByUser = true; UpdateVisibility(); })
+            : new($"Show {Character.Name}", Summon));
         entries.Add(MenuEntry.Separator);
         entries.Add(new("Settings", OpenSettings));
         entries.Add(new("Exit", Exit));
@@ -546,7 +618,7 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
 
     private void LoadPlugins()
     {
-        var plugins = new List<IPastyPlugin> { new BuiltInCommandsPlugin(_personality) };
+        var plugins = new List<IPastyPlugin> { new BuiltInCommandsPlugin(_personality), _remindersPlugin };
         if (_settings.EnableExternalPlugins)
         {
             var result = PluginLoader.LoadFrom(PluginLoader.DefaultDirectory);
@@ -581,13 +653,14 @@ public sealed class PastyCompanion : IPastyHost, IDisposable
                     : $"I'm set to use {BrainProviders.Get(_settings.Brain).ShortName}, but it's missing a key or model, so you get offline me. Check Settings → Brain.")));
         Commands.Register(new("birthday", "When was I born?", _ =>
             new Utterance(SeasonCalendar.IsHalloweenNight(DateTime.Now)
-                ? "Today! I was born on Halloween 2026. 🎂🎃 Cake would be nice. Tubes can't eat cake. Get the cake anyway."
+                ? "Today! I was born on Halloween 2026. 🎂🎃 Cake would be nice. {Nouns} can't eat cake. Get the cake anyway."
                 : "I was born on Halloween 2026. 🎃 Explains the hat.", PastyReaction.Happy)));
     }
 
     public void Dispose()
     {
         _heartbeat.Stop();
+        _hotkey?.Dispose();
         _pendingAsk?.Cancel();
         _presence.Dispose();
         _context.Dispose();

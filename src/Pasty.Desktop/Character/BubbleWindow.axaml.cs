@@ -110,6 +110,9 @@ public partial class BubbleWindow : Window
 
     public bool IsShowing => IsVisible && Root.Opacity > 0;
 
+    /// <summary>Reduced motion: show the whole message at once instead of typing it out.</summary>
+    public bool InstantText { get; set; }
+
     public void ShowMessage(string text)
     {
         StopDots();
@@ -117,10 +120,11 @@ public partial class BubbleWindow : Window
         AskPanel.IsVisible = false;
         Message.IsVisible = true;
         _fullText = text;
-        _shown = 0;
+        _shown = InstantText ? text.Length : 0;
         Message.Text = "";
         ShowBubble();
-        _typewriter.Start();
+        if (InstantText) TypeNext();
+        else _typewriter.Start();
     }
 
     public void ShowThinking()

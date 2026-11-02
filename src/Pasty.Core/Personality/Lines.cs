@@ -1,14 +1,18 @@
 namespace Pasty.Core.Personality;
 
-/// <summary>A line Pasty can say. Spice 0 is wholesome, 1 is cheeky, 2 is the reason people right-click "Hide".</summary>
-public sealed record Line(string Text, int Spice = 0, PastyReaction Reaction = PastyReaction.None);
+/// <summary>
+/// A line Pasty can say. Spice 0 is wholesome, 1 is cheeky, 2 is the reason people right-click "Hide".
+/// Text may use character placeholders ({name}, {noun}, {kind}…; see CharacterInfo.Format).
+/// <paramref name="Only"/> limits a line to one character (squeeze jokes only make sense for Classic Pasty's tube).
+/// </summary>
+public sealed record Line(string Text, int Spice = 0, PastyReaction Reaction = PastyReaction.None, string? Only = null);
 
 /// <summary>Pasty's offline repertoire. Every line here works with no network, no AI, no anything.</summary>
 public static class Lines
 {
     public static readonly Line[] FirstRun =
     [
-        new("Pasty has entered the chat. Hi! I'm Pasty, your new desktop companion. Drag me anywhere, double-click me to talk, right-click for options.", 0, PastyReaction.Wave),
+        new("{name} has entered the chat. Hi! I'm {name}, your new desktop companion. Drag me anywhere, double-click me to talk, right-click for options.", 0, PastyReaction.Wave),
     ];
 
     public static readonly Line[] Morning =
@@ -21,7 +25,7 @@ public static class Lines
     public static readonly Line[] Afternoon =
     [
         new("Afternoon! Ready to get things done? I'll supervise.", 0, PastyReaction.Wave),
-        new("Ah, the post-lunch slump. I don't eat, so I wouldn't know. I'm just a tube.", 1, PastyReaction.Wave),
+        new("Ah, the post-lunch slump. I don't eat, so I wouldn't know. I'm just {kind}.", 1, PastyReaction.Wave),
     ];
 
     public static readonly Line[] Evening =
@@ -46,7 +50,7 @@ public static class Lines
         new("Win+. opens the emoji picker. Use this power responsibly.", 0),
         new("Have you tried turning it off and on again? Not me. Something else.", 1),
         new("I could be helping right now. I'm just saying. I'm here. Being available.", 1),
-        new("Remember to stretch. I can't. I'm a tube. Live the dream for me.", 0),
+        new("Remember to stretch. I can't. I'm {kind}. Live the dream for me.", 0),
         new("Hydration check. Drink some water. I'll wait.", 0),
         new("My ancestors were wiser than you think. Most of them just had bad timing.", 0),
         new("It looks like you're using a computer. Would you like help with that?", 1, PastyReaction.Smug),
@@ -67,14 +71,16 @@ public static class Lines
         new("That tickles.", 0, PastyReaction.Poked),
         new("Yes? Can I help you?", 0, PastyReaction.Poked),
         new("Boop received.", 0, PastyReaction.Poked),
-        new("Careful, I'm under pressure. Literally. I'm a tube.", 1, PastyReaction.Poked),
+        new("Careful, I'm under pressure. Literally. I'm a tube.", 1, PastyReaction.Poked, Characters.Characters.ClassicPastyId),
+        new("Careful. Twist me up too far and it gets awkward for everyone.", 1, PastyReaction.Poked, Characters.Characters.PastyId),
     ];
 
     public static readonly Line[] PokeAnnoyed =
     [
         new("Okay, you can stop now.", 1, PastyReaction.Annoyed),
         new("I am not a stress ball.", 1, PastyReaction.Annoyed),
-        new("Every click squeezes a little more of me out. Think about that.", 2, PastyReaction.Annoyed),
+        new("Every click squeezes a little more of me out. Think about that.", 2, PastyReaction.Annoyed, Characters.Characters.ClassicPastyId),
+        new("Every poke wears a little more of me down. That's how glue sticks work. Think about that.", 2, PastyReaction.Annoyed, Characters.Characters.PastyId),
         new("Do you poke all your software like this?", 2, PastyReaction.Annoyed),
         new("I'm filing a bug report. Against you.", 2, PastyReaction.Annoyed),
     ];
@@ -91,7 +97,7 @@ public static class Lines
     public static readonly Line[] WakeUp =
     [
         new("Huh? I'm up! I wasn't sleeping. I was buffering.", 0, PastyReaction.Surprised),
-        new("Oh, you're back! I was just resting my cap.", 0, PastyReaction.Surprised),
+        new("Oh, you're back! I was just resting my eyes.", 0, PastyReaction.Surprised),
         new("Welcome back. I kept your desktop warm.", 0, PastyReaction.Wave),
     ];
 
@@ -114,7 +120,7 @@ public static class Lines
         [
             new("It looks like you're writing something. Would you like me to judge it?", 1, PastyReaction.Smug),
             new("Writing? Remember: every great novel started as a blank page and some procrastination.", 0),
-            new("If you need a synonym for 'good', I recommend 'Pasty-approved'.", 1, PastyReaction.Smug),
+            new("If you need a synonym for 'good', I recommend '{name}-approved'.", 1, PastyReaction.Smug),
         ],
         ["spreadsheet"] =
         [
@@ -125,7 +131,7 @@ public static class Lines
         ["slides"] =
         [
             new("Presentation time? Remember: nobody ever said 'I wish there were more bullet points.'", 1),
-            new("Pro tip: one idea per slide. Pasty per slide is optional but encouraged.", 0),
+            new("Pro tip: one idea per slide. {name} per slide is optional but encouraged.", 0),
         ],
         ["browser"] =
         [
@@ -135,7 +141,7 @@ public static class Lines
         ],
         ["chat"] =
         [
-            new("Chatting! Tell them Pasty says hi.", 0, PastyReaction.Wave),
+            new("Chatting! Tell them {name} says hi.", 0, PastyReaction.Wave),
             new("Careful: you're typing in a chat app. Every typo is forever.", 1),
         ],
         ["email"] =
@@ -194,6 +200,24 @@ public static class Lines
         new("That's above my pay grade. I'm not paid. Try /help or enable an AI brain in Settings.", 1, PastyReaction.Smug),
     ];
 
+    /// <summary>Break nudges. {duration} becomes e.g. "an hour" or "90 minutes".</summary>
+    public static readonly Line[] BreakNudges =
+    [
+        new("You've been at it for {duration}. Stand up, stretch, look at something far away. I'll guard the desktop.", 0, PastyReaction.Wave),
+        new("{duration} straight! Impressive. Now go get some water. Doctor's orders. I'm not a doctor. I'm {kind}.", 1, PastyReaction.Happy),
+        new("Break time. {duration} of focus deserves five minutes of not-focus.", 0, PastyReaction.Wave),
+        new("Your eyes have been staring at pixels for {duration}. Give them a little vacation.", 0),
+        new("Still going after {duration}? Respect. Also: stretch. Your spine will thank you.", 1, PastyReaction.Smug),
+    ];
+
+    /// <summary>What a reminder sounds like when it's due. {text} is what the user asked to be reminded of.</summary>
+    public static readonly Line[] ReminderDue =
+    [
+        new("⏰ Reminder: {text}", 0, PastyReaction.Surprised),
+        new("⏰ You asked me to remind you: {text}", 0, PastyReaction.Surprised),
+        new("⏰ {text}! That's your reminder. I'm very reliable.", 1, PastyReaction.Surprised),
+    ];
+
     public static readonly Line[] Jokes =
     [
         new("Why did the developer go broke? Because they used up all their cache."),
@@ -203,7 +227,8 @@ public static class Lines
         new("Why was the JavaScript developer sad? They didn't know how to 'null' their feelings."),
         new("A SQL query walks into a bar, walks up to two tables and asks: 'Can I join you?'"),
         new("I'd tell you a UDP joke, but you might not get it."),
-        new("Why did the tube of paste break up with the stapler? Too clingy. Wait, that's me. I'm the clingy one."),
+        new("Why did the tube of paste break up with the stapler? Too clingy. Wait, that's me. I'm the clingy one.", Only: Characters.Characters.ClassicPastyId),
+        new("Why does everyone want a glue stick at the party? It holds everything together. Also it never leaves. Hi.", Only: Characters.Characters.PastyId),
         new("How many Windows users does it take to change a light bulb? Just one, but it needs to restart twice."),
     ];
 }

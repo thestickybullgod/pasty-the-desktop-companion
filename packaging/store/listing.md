@@ -9,12 +9,12 @@ Limits noted in brackets are Partner Center's.
 Pasty the Desktop Companion
 
 ## Short description [up to 1,000 characters; shown at the top of the listing]
-Pasty is a tube of paste with a screw-cap hat, very expressive eyebrows, and opinions. A friendly desktop companion that lives on your screen, tells jokes, shares Windows tips and reacts when you poke it. Works completely offline, collects nothing, and can optionally connect to an AI brain of your choice. Born on Halloween 2026.
+Pasty is an orange glue stick with a snap-on cap, very expressive eyebrows, and opinions. A friendly desktop companion that lives on your screen, tells jokes, shares Windows tips and reacts when you poke it. Works completely offline, collects nothing, and can optionally connect to an AI brain of your choice. Born on Halloween 2026.
 
 ## Description [up to 10,000 characters]
 Remember the desktop assistants of the 90s? Pasty is what might have happened if one of them had survived into the modern era: helpful, nostalgic, slightly obnoxious, technically competent, and occasionally sarcastic.
 
-Pasty is an original character: a tube of paste with a screw-cap hat and eyebrows that do a lot of the talking. It lives on your desktop, always on top, wherever you drag it.
+Pasty is an original character: an orange glue stick with a teal snap-on cap and eyebrows that do a lot of the talking. It lives on your desktop, always on top, wherever you drag it. Prefer a different look? Pick one of eight companions, from Classic Pasty (the original tube of paste) to Brick, a 90s brick phone, or Potato.
 
 WHAT PASTY DOES
 • Hangs out on your desktop with idle, listening, thinking and talking animations, and its eyes follow your cursor
@@ -22,6 +22,8 @@ WHAT PASTY DOES
 • Answers questions when you double-click it, with an optional AI brain
 • Slash commands: /joke, /tip, /roll 2d6, /flip, /time and more (type /help)
 • A sarcasm slider, from Saintly to Insufferable
+• Reminders ("remind me in 20 minutes to stretch"), optional break nudges and quiet hours
+• Ask from any app with a keyboard shortcut (Ctrl+Alt+P)
 • Built to live with all day: naps when you're away, hides during full-screen games and presentations, snoozes on request, and never repeats a joke within the hour
 
 PRIVATE BY DESIGN
@@ -41,7 +43,7 @@ FREE AND OPEN SOURCE
 Pasty is free software under the GNU GPL v3 or later. Source code: https://github.com/thestickybullgod/pasty-the-desktop-companion
 
 ## What's new in this version
-Pasty's first Microsoft Store release. Includes AI brain options (Ollama, Claude, ChatGPT, Gemini, GitHub Models, or any OpenAI-compatible endpoint), Start with Windows, and the Halloween Edition.
+A new look: Pasty is now an orange glue stick (the original tube is still there as Classic Pasty), and you can pick from eight companions. Also new: reminders, break nudges, quiet hours, a global shortcut to ask Pasty from any app (Ctrl+Alt+P), reduced motion, and much lower memory use.
 
 ## Product features [up to 20, 200 characters each]
 1. An original animated desktop companion that lives on top of your other windows
@@ -55,12 +57,17 @@ Pasty's first Microsoft Store release. Includes AI brain options (Ollama, Claude
 9. Optional Start with Windows
 10. Halloween Edition with a witch hat, a bat friend and ghost mode
 11. Free and open source (GPL-3.0-or-later)
+12. Pick your companion: Pasty, Classic Pasty, Brick, Sticky, Floppy, Mugsy, Hilite or Potato
+13. Reminders, break nudges and quiet hours
+14. Ask from any app with Ctrl+Alt+P
+15. Reduced motion that follows your Windows animation setting
 
 ## Screenshots [files in packaging/store/screenshots; captions up to 200 characters]
 1. `1-meet-pasty.png`: Meet Pasty, a desktop buddy with opinions.
 2. `2-bring-your-own-brain.png`: Use Pasty's offline personality, or connect an AI brain of your choice.
 3. `3-private-by-design.png`: Private by design: Pasty collects nothing.
 4. `4-halloween-edition.png`: The Halloween Edition: Pasty was born on Halloween 2026.
+5. `5-pick-your-companion.png`: Pick your companion: eight looks, one personality.
 
 ## Search terms [up to 7]
 1. desktop companion

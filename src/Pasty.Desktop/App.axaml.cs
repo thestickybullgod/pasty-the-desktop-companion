@@ -20,6 +20,20 @@ public partial class App : Application
             // Pasty lives in the tray; closing a window never quits it.
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
+            var preview = Array.IndexOf(desktop.Args ?? [], StoreScreenshots.PreviewArgument);
+            if (preview >= 0)
+            {
+                var dir = desktop.Args!.ElementAtOrDefault(preview + 1) ?? "character-preview";
+                var ids = (desktop.Args!.ElementAtOrDefault(preview + 2) ?? "pasty").Split(',', StringSplitOptions.RemoveEmptyEntries);
+                Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
+                {
+                    try { await StoreScreenshots.RenderPreviewAsync(dir, ids); }
+                    finally { desktop.Shutdown(); }
+                });
+                base.OnFrameworkInitializationCompleted();
+                return;
+            }
+
             var screenshots = Array.IndexOf(desktop.Args ?? [], StoreScreenshots.Argument);
             if (screenshots >= 0)
             {

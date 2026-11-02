@@ -14,11 +14,14 @@ public sealed class ClaudeBrain : IPastyBrain
 
     private readonly AnthropicClient _client;
     private readonly string _model;
+    private readonly string _systemPrompt;
     private readonly List<BetaMessageParam> _history = [];
     private readonly SemaphoreSlim _gate = new(1, 1);
 
-    public ClaudeBrain(string apiKey, string model)
+    /// <param name="systemPrompt">Personality prompt for the selected character; defaults to Pasty.</param>
+    public ClaudeBrain(string apiKey, string model, string? systemPrompt = null)
     {
+        _systemPrompt = systemPrompt ?? PastyPrompt.System;
         _client = new AnthropicClient { ApiKey = apiKey };
         _model = model;
     }
@@ -56,7 +59,7 @@ public sealed class ClaudeBrain : IPastyBrain
                 {
                     Model = _model,
                     MaxTokens = 2048,
-                    System = PastyPrompt.System,
+                    System = _systemPrompt,
                     // Chat banter doesn't need deep reasoning; low effort keeps replies snappy and cheap.
                     OutputConfig = new BetaOutputConfig { Effort = Effort.Low },
                     // If a safety classifier declines, let the API re-serve the request on a fallback model.

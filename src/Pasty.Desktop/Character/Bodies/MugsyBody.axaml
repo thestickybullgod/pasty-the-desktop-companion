@@ -1,0 +1,32 @@
+<bodies:CharacterBody xmlns="https://github.com/avaloniaui"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:bodies="using:Pasty.Desktop.Character.Bodies"
+                      x:Class="Pasty.Desktop.Character.Bodies.MugsyBody"
+                      Width="140" Height="184">
+    <!-- Mugsy: a coffee mug. The steam changes with its mood (see MugsyBody.Animate). -->
+    <Canvas x:Name="BackLayer" Width="140" Height="184">
+        <!-- Steam -->
+        <Path x:Name="SteamA" Data="M 52,46 C 46,38 58,32 52,24 C 46,16 56,12 52,6" Stroke="#CFD8DE" StrokeThickness="3.5" StrokeLineCap="Round" Opacity="0.85" RenderTransformOrigin="52,46" />
+        <Path x:Name="SteamB" Data="M 70,44 C 64,36 76,30 70,22 C 64,14 74,10 70,2" Stroke="#CFD8DE" StrokeThickness="3.5" StrokeLineCap="Round" Opacity="0.85" RenderTransformOrigin="70,44" />
+        <Path x:Name="SteamC" Data="M 88,46 C 82,38 94,32 88,24 C 82,16 92,12 88,6" Stroke="#CFD8DE" StrokeThickness="3.5" StrokeLineCap="Round" Opacity="0.85" RenderTransformOrigin="88,46" />
+
+        <!-- Handle (on the left; the right arm waves) -->
+        <Path Data="M 32,82 C 8,82 8,126 32,126" Stroke="#8C7A64" StrokeThickness="12" StrokeLineCap="Round" />
+        <Path Data="M 32,82 C 8,82 8,126 32,126" Stroke="#F1E7D8" StrokeThickness="7.5" StrokeLineCap="Round" />
+
+        <!-- Mug -->
+        <Path Data="M 30,56 H 108 V 148 Q 108,168 88,168 H 50 Q 30,168 30,148 Z" Stroke="#8C7A64" StrokeThickness="2">
+            <Path.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#EADFCD" Offset="0" />
+                    <GradientStop Color="#FFFCF5" Offset="0.4" />
+                    <GradientStop Color="#DCCDB6" Offset="1" />
+                </LinearGradientBrush>
+            </Path.Fill>
+        </Path>
+        <Rectangle Canvas.Left="31" Canvas.Top="142" Width="76" Height="9" Fill="#14A99A" />
+        <!-- Rim and coffee -->
+        <Ellipse Canvas.Left="30" Canvas.Top="48" Width="78" Height="16" Fill="#F7EFE3" Stroke="#8C7A64" StrokeThickness="2" />
+        <Ellipse x:Name="Coffee" Canvas.Left="36" Canvas.Top="51" Width="66" Height="9" Fill="#6B4226" />
+    </Canvas>
+</bodies:CharacterBody>

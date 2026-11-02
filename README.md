@@ -18,6 +18,8 @@ character assets are used or redistributed.
 
 - 🖱️ **Lives on your desktop**: always on top, drag it anywhere, and it remembers where you left it.
 - 💬 **Speech bubbles**, with a typewriter effect and an ask box (double-click Pasty).
+- 🎭 **Pick your companion**: Pasty (an orange glue stick), Classic Pasty (the original tube), Brick (a 90s brick
+  phone), Sticky, Floppy, Mugsy, Hilite or Potato.
 - 🎞️ **Animated**: idle, listening, thinking, talking, sleeping, plus reactions (pokes, hops, waves, smugness).
   Eyes follow your cursor.
 - 🪟 **Windows 11-style settings**: Fluent design, light and dark mode, applies changes instantly.
@@ -27,6 +29,11 @@ character assets are used or redistributed.
   ("code editor", "a link"), and never stored or sent anywhere.
 - 😴 **Built to run all day**: naps when you're away, hides during full-screen games and presentations,
   snooze from the tray, never repeats a joke within an hour, and throttles its animation frame rate.
+- ⏰ **Reminders**: "remind me in 20 minutes to stretch", `/remind at 3pm call mom`. They survive restarts.
+- 🧘 **Wellbeing**: optional break nudges after a long stretch at the keyboard, and quiet hours when Pasty
+  keeps its thoughts to itself.
+- ⌨️ **Ask from anywhere** with a global shortcut (Ctrl+Alt+P by default; Windows).
+- 🐢 **Reduced motion**: follows your system's animation setting, or choose it in Settings.
 - 🧩 **Plugins**: drop-in .NET DLLs can add slash commands (opt-in).
 - 🐧 **Windows and Linux.**
 
@@ -50,16 +57,16 @@ files, cursor or screen. It respects Snooze, Quiet mode and full-screen hiding, 
 ## Install
 
 ### Windows 10 / 11
-Download `Pasty-1.1.2-win-x64.zip` (or `win-arm64`), extract anywhere, run `Pasty.exe`.
+Download `Pasty-1.2.0-win-x64.zip` (or `win-arm64`), extract anywhere, run `Pasty.exe`.
 No installer and no admin rights needed. Turn on *Start with Windows* in Settings if you'd like.
 
 ### Linux
-Download `Pasty-1.1.2-linux-x64.tar.gz` (or `linux-arm64`), then:
+Download `Pasty-1.2.0-linux-x64.tar.gz` (or `linux-arm64`), then:
 
 ```sh
-tar -xzf Pasty-1.1.2-linux-x64.tar.gz
-cd Pasty-1.1.2-linux-x64
-./install.sh            # per-user install, no root; ./install.sh --uninstall to remove
+tar -xzf Pasty-1.2.0-linux-x64.tar.gz
+cd Pasty-1.2.0-linux-x64
+sh install.sh           # per-user install, no root; sh install.sh --uninstall to remove
 ```
 
 Works best on **X11**. On **Wayland**, Pasty runs through XWayland. Your compositor may ignore
@@ -73,13 +80,16 @@ Optional packages: `libxss1` / `libXScrnSaver` (napping when you're away) and `l
 |---|---|
 | Drag | Moves (and lands with a hop) |
 | Click | Gets poked. Keep poking and see what happens. |
-| Double-click | Opens the ask box |
+| Double-click, or Ctrl+Alt+P anywhere | Opens the ask box |
 | Right-click / tray icon | Menu: ask, joke, snooze, hide, settings, exit |
 | Launch Pasty again | The running Pasty comes forward to listen |
 | `Pasty --settings` | Opens settings |
 
 Type `/help` in the ask box for commands: `/joke`, `/tip`, `/roll 2d6`, `/flip`, `/time`, `/birthday`,
-`/boo`, `/trickortreat`, `/graveyard`, `/brain`, `/reset`, `/settings`.
+`/remind`, `/reminders`, `/forget`, `/boo`, `/trickortreat`, `/graveyard`, `/brain`, `/reset`, `/settings`.
+
+On Linux there's no built-in global shortcut yet: bind a key to `pasty` in your desktop's keyboard
+settings, and the running Pasty comes forward to listen.
 
 ## AI brain (optional)
 

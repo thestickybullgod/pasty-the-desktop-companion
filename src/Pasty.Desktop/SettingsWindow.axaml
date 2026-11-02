@@ -112,10 +112,68 @@
                         </StackPanel>
                         <ComboBox x:Name="SleepChoice" Grid.Column="2" Width="190" VerticalAlignment="Center" Margin="12,0,0,0" />
                     </Grid></Border>
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="🌙" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Quiet hours" />
+                            <TextBlock Classes="desc" Text="No idle chatter, break nudges or reactions in this window. Answers and reminders still come through." />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="12,0,0,0">
+                            <ComboBox x:Name="QuietStartChoice" Width="110" />
+                            <TextBlock Text="to" VerticalAlignment="Center" />
+                            <ComboBox x:Name="QuietEndChoice" Width="110" />
+                            <ToggleSwitch IsChecked="{Binding QuietHoursEnabled}" />
+                        </StackPanel>
+                    </Grid></Border>
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="🧘" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Break nudges" />
+                            <TextBlock Classes="desc" Text="A gentle reminder to stand up after a long stretch at the keyboard. Stepping away for 5 minutes resets the clock." />
+                        </StackPanel>
+                        <ComboBox x:Name="BreakChoice" Grid.Column="2" Width="190" VerticalAlignment="Center" Margin="12,0,0,0" />
+                    </Grid></Border>
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="⌨️" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Ask shortcut" />
+                            <TextBlock Classes="desc" x:Name="HotkeyStatus" Text="Press it from any app to ask Pasty something." />
+                        </StackPanel>
+                        <ComboBox x:Name="HotkeyChoice" Grid.Column="2" Width="190" VerticalAlignment="Center" Margin="12,0,0,0" />
+                    </Grid></Border>
+                    <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Classes="icon" Text="🐢" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="title" Text="Motion" />
+                            <TextBlock Classes="desc" x:Name="MotionStatus" />
+                        </StackPanel>
+                        <ComboBox x:Name="MotionChoice" Grid.Column="2" Width="190" VerticalAlignment="Center" Margin="12,0,0,0" />
+                    </Grid></Border>
+                    <TextBlock Classes="desc" Margin="4,10,0,0"
+                               Text="Reminders: type &quot;remind me in 20 minutes to stretch&quot; when you ask, or use /remind, /reminders and /forget." />
                 </StackPanel>
 
                 <!-- Personality -->
                 <StackPanel x:Name="PersonalityPage">
+                    <Border Classes="card" Padding="16,12,16,8">
+                        <StackPanel Spacing="4">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Classes="icon" Text="🎭" />
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Classes="title" Text="Character" />
+                                    <TextBlock Classes="desc" Text="Who sits on your desktop. Same personality, different look, and a few lines of their own." />
+                                </StackPanel>
+                            </Grid>
+                            <!-- Filled in code: one portrait per character -->
+                            <ListBox x:Name="CharacterPicker" Background="Transparent" Margin="34,6,0,0" SelectionMode="Single">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
                     <Border Classes="card"><Grid ColumnDefinitions="Auto,*,Auto">
                         <TextBlock Classes="icon" Text="💬" />
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">

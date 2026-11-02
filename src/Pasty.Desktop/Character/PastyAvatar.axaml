@@ -3,13 +3,12 @@
              x:Class="Pasty.Desktop.Character.PastyAvatar"
              Width="140" Height="184">
     <!--
-        Pasty: an original character. A tube of paste with a screw-cap hat.
-        All artwork is vector geometry defined here; no external or third-party assets.
+        The shared character rig. Everything that animates lives here: shadow, arms, face, sleep, the
+        Halloween hat and bat. Each character supplies only a body (behind the face) and a "topper"
+        (cap, antenna, sprouts…) through Bodies/*.axaml. All artwork is original vector geometry.
         Each animated part is a 140×184 canvas so its RenderTransformOrigin is in artwork coordinates.
     -->
     <UserControl.Resources>
-        <StreamGeometry x:Key="BodyGeometry">M 26,162 C 23,122 30,72 44,50 L 56,38 L 84,38 L 96,50 C 110,72 117,122 114,162 Z</StreamGeometry>
-        <StreamGeometry x:Key="BodyClip">M 26,162 C 23,122 30,72 44,50 L 56,38 L 84,38 L 96,50 C 110,72 117,122 114,162 Z</StreamGeometry>
         <SolidColorBrush x:Key="Ink" Color="#2F3A48" />
         <SolidColorBrush x:Key="Outline" Color="#7D8896" />
     </UserControl.Resources>
@@ -23,7 +22,7 @@
         <Canvas x:Name="Figure" Width="140" Height="184" RenderTransformOrigin="70,176">
 
             <!-- Arms (behind the body) -->
-            <Canvas Width="140" Height="184">
+            <Canvas x:Name="LeftArm" Width="140" Height="184">
                 <Path Data="M 31,116 Q 17,122 13,136" Stroke="{StaticResource Outline}" StrokeThickness="4" StrokeLineCap="Round" />
                 <Ellipse Canvas.Left="8" Canvas.Top="132" Width="10" Height="10" Fill="White" Stroke="{StaticResource Outline}" StrokeThickness="2" />
             </Canvas>
@@ -32,50 +31,13 @@
                 <Ellipse Canvas.Left="122" Canvas.Top="132" Width="10" Height="10" Fill="White" Stroke="{StaticResource Outline}" StrokeThickness="2" />
             </Canvas>
 
-            <!-- Crimped tube end -->
-            <Rectangle Canvas.Left="21" Canvas.Top="158" Width="98" Height="17" RadiusX="3" RadiusY="3" Fill="#E3E7EC" Stroke="{StaticResource Outline}" StrokeThickness="2" />
-            <Path Stroke="#B4BCC6" StrokeThickness="1.5"
-                  Data="M 31,161 V 172 M 41,161 V 172 M 51,161 V 172 M 61,161 V 172 M 71,161 V 172 M 81,161 V 172 M 91,161 V 172 M 101,161 V 172 M 111,161 V 172" />
+            <!-- The character's body -->
+            <Canvas x:Name="BodyHost" Width="140" Height="184" />
 
-            <!-- Neck -->
-            <Rectangle Canvas.Left="55" Canvas.Top="30" Width="30" Height="10" Fill="#DDE2E8" Stroke="{StaticResource Outline}" StrokeThickness="1.5" />
-
-            <!-- Body -->
-            <Path Data="{StaticResource BodyGeometry}" Stroke="{StaticResource Outline}" StrokeThickness="2">
-                <Path.Fill>
-                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
-                        <GradientStop Color="#E9EDF2" Offset="0" />
-                        <GradientStop Color="#FFFFFF" Offset="0.38" />
-                        <GradientStop Color="#F6F8FA" Offset="0.7" />
-                        <GradientStop Color="#D5DBE2" Offset="1" />
-                    </LinearGradientBrush>
-                </Path.Fill>
-            </Path>
-
-            <!-- Label band, clipped to the body -->
-            <Canvas Width="140" Height="184" Clip="{StaticResource BodyClip}">
-                <Rectangle x:Name="Band" Canvas.Left="10" Canvas.Top="122" Width="120" Height="28" Fill="#FF6B57" />
-                <Rectangle Canvas.Left="10" Canvas.Top="122" Width="120" Height="3" Fill="#FFFFFF" Opacity="0.35" />
-                <Path x:Name="BandSwirl" Data="M 34,137 q 6,-7 12,0 t 12,0 t 12,0 t 12,0 t 12,0" Stroke="White" StrokeThickness="3" StrokeLineCap="Round" />
-            </Canvas>
-
-            <!-- Cap (doubles as a hat it can tip) -->
+            <!-- Topper slot (doubles as a hat it can tip) and the Halloween witch hat -->
             <Canvas x:Name="CapLayer" Width="140" Height="184" RenderTransformOrigin="54,32">
-                <Canvas x:Name="ClassicCap" Width="140" Height="184">
-                <Rectangle Canvas.Left="50" Canvas.Top="5" Width="40" Height="28" RadiusX="6" RadiusY="6" Stroke="#0B6B62" StrokeThickness="2">
-                    <Rectangle.Fill>
-                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
-                            <GradientStop Color="#2CC5B5" Offset="0" />
-                            <GradientStop Color="#14A99A" Offset="0.5" />
-                            <GradientStop Color="#0E857A" Offset="1" />
-                        </LinearGradientBrush>
-                    </Rectangle.Fill>
-                </Rectangle>
-                <Path Stroke="#7FE3D8" StrokeThickness="1.5" Opacity="0.8"
-                      Data="M 57,9 V 29 M 63,9 V 29 M 69,9 V 29 M 75,9 V 29 M 81,9 V 29" />
-                </Canvas>
+                <Canvas x:Name="TopperHost" Width="140" Height="184" />
 
-                <!-- Halloween Edition: witch hat (replaces the cap, tips the same way) -->
                 <Canvas x:Name="WitchHat" Width="140" Height="184" IsVisible="False">
                     <Ellipse Canvas.Left="34" Canvas.Top="25" Width="72" Height="13" Fill="#2B1A3F" Stroke="#140B20" StrokeThickness="1.5" />
                     <Path Data="M 50,31 C 54,14 60,-2 70,-10 C 76,-14 84,-14 90,-8 C 84,-8 80,-5 78,0 C 82,10 86,20 90,31 Z"
@@ -85,37 +47,40 @@
                 </Canvas>
             </Canvas>
 
-            <!-- Blush -->
-            <Ellipse x:Name="BlushLeft" Canvas.Left="36" Canvas.Top="99" Width="13" Height="7" Fill="#FF8FA3" Opacity="0" />
-            <Ellipse x:Name="BlushRight" Canvas.Left="91" Canvas.Top="99" Width="13" Height="7" Fill="#FF8FA3" Opacity="0" />
+            <!-- The shared face. Characters can shift it to fit their body (FaceOffsetY). -->
+            <Canvas x:Name="FaceLayer" Width="140" Height="184">
+                <!-- Blush -->
+                <Ellipse x:Name="BlushLeft" Canvas.Left="36" Canvas.Top="99" Width="13" Height="7" Fill="#FF8FA3" Opacity="0" />
+                <Ellipse x:Name="BlushRight" Canvas.Left="91" Canvas.Top="99" Width="13" Height="7" Fill="#FF8FA3" Opacity="0" />
 
-            <!-- Eyes -->
-            <Canvas x:Name="EyesLayer" Width="140" Height="184" RenderTransformOrigin="70,83">
-                <Ellipse Canvas.Left="43" Canvas.Top="67" Width="25" Height="31" Fill="White" Stroke="{StaticResource Ink}" StrokeThickness="1.6" />
-                <Ellipse Canvas.Left="72" Canvas.Top="67" Width="25" Height="31" Fill="White" Stroke="{StaticResource Ink}" StrokeThickness="1.6" />
-                <Canvas x:Name="Pupils" Width="140" Height="184">
-                    <Ellipse Canvas.Left="50" Canvas.Top="78" Width="12" Height="13" Fill="{StaticResource Ink}" />
-                    <Ellipse Canvas.Left="79" Canvas.Top="78" Width="12" Height="13" Fill="{StaticResource Ink}" />
-                    <Ellipse Canvas.Left="55" Canvas.Top="80" Width="4" Height="4" Fill="White" />
-                    <Ellipse Canvas.Left="84" Canvas.Top="80" Width="4" Height="4" Fill="White" />
+                <!-- Eyes -->
+                <Canvas x:Name="EyesLayer" Width="140" Height="184" RenderTransformOrigin="70,83">
+                    <Ellipse Canvas.Left="43" Canvas.Top="67" Width="25" Height="31" Fill="White" Stroke="{StaticResource Ink}" StrokeThickness="1.6" />
+                    <Ellipse Canvas.Left="72" Canvas.Top="67" Width="25" Height="31" Fill="White" Stroke="{StaticResource Ink}" StrokeThickness="1.6" />
+                    <Canvas x:Name="Pupils" Width="140" Height="184">
+                        <Ellipse Canvas.Left="50" Canvas.Top="78" Width="12" Height="13" Fill="{StaticResource Ink}" />
+                        <Ellipse Canvas.Left="79" Canvas.Top="78" Width="12" Height="13" Fill="{StaticResource Ink}" />
+                        <Ellipse Canvas.Left="55" Canvas.Top="80" Width="4" Height="4" Fill="White" />
+                        <Ellipse Canvas.Left="84" Canvas.Top="80" Width="4" Height="4" Fill="White" />
+                    </Canvas>
                 </Canvas>
-            </Canvas>
 
-            <!-- Eyebrows: the sarcasm delivery system -->
-            <Canvas x:Name="BrowLeft" Width="140" Height="184" RenderTransformOrigin="55,58">
-                <Path Data="M 44,61 Q 55,55 66,60" Stroke="{StaticResource Ink}" StrokeThickness="4" StrokeLineCap="Round" />
-            </Canvas>
-            <Canvas x:Name="BrowRight" Width="140" Height="184" RenderTransformOrigin="85,58">
-                <Path Data="M 74,60 Q 85,55 96,61" Stroke="{StaticResource Ink}" StrokeThickness="4" StrokeLineCap="Round" />
-            </Canvas>
+                <!-- Eyebrows: the sarcasm delivery system -->
+                <Canvas x:Name="BrowLeft" Width="140" Height="184" RenderTransformOrigin="55,58">
+                    <Path Data="M 44,61 Q 55,55 66,60" Stroke="{StaticResource Ink}" StrokeThickness="4" StrokeLineCap="Round" />
+                </Canvas>
+                <Canvas x:Name="BrowRight" Width="140" Height="184" RenderTransformOrigin="85,58">
+                    <Path Data="M 74,60 Q 85,55 96,61" Stroke="{StaticResource Ink}" StrokeThickness="4" StrokeLineCap="Round" />
+                </Canvas>
 
-            <!-- Mouths: one visible at a time -->
-            <Path x:Name="MouthSmile" Data="M 61,105 Q 70,114 79,105" Stroke="{StaticResource Ink}" StrokeThickness="3" StrokeLineCap="Round" />
-            <Path x:Name="Fangs" Data="M 64.5,108.6 L 66,113 L 67.6,109.6 Z M 72.4,109.6 L 74,113 L 75.5,108.6 Z" Fill="White" Stroke="{StaticResource Ink}" StrokeThickness="0.8" IsVisible="False" />
-            <Path x:Name="MouthFlat" Data="M 62,108 L 78,108" Stroke="{StaticResource Ink}" StrokeThickness="3" StrokeLineCap="Round" IsVisible="False" />
-            <Path x:Name="MouthSmirk" Data="M 61,108 Q 72,111 80,103" Stroke="{StaticResource Ink}" StrokeThickness="3" StrokeLineCap="Round" IsVisible="False" />
-            <Canvas x:Name="MouthOpen" Width="140" Height="184" RenderTransformOrigin="70,104" IsVisible="False">
-                <Ellipse Canvas.Left="63" Canvas.Top="102" Width="14" Height="12" Fill="#8E2A2A" Stroke="{StaticResource Ink}" StrokeThickness="2" />
+                <!-- Mouths: one visible at a time -->
+                <Path x:Name="MouthSmile" Data="M 61,105 Q 70,114 79,105" Stroke="{StaticResource Ink}" StrokeThickness="3" StrokeLineCap="Round" />
+                <Path x:Name="Fangs" Data="M 64.5,108.6 L 66,113 L 67.6,109.6 Z M 72.4,109.6 L 74,113 L 75.5,108.6 Z" Fill="White" Stroke="{StaticResource Ink}" StrokeThickness="0.8" IsVisible="False" />
+                <Path x:Name="MouthFlat" Data="M 62,108 L 78,108" Stroke="{StaticResource Ink}" StrokeThickness="3" StrokeLineCap="Round" IsVisible="False" />
+                <Path x:Name="MouthSmirk" Data="M 61,108 Q 72,111 80,103" Stroke="{StaticResource Ink}" StrokeThickness="3" StrokeLineCap="Round" IsVisible="False" />
+                <Canvas x:Name="MouthOpen" Width="140" Height="184" RenderTransformOrigin="70,104" IsVisible="False">
+                    <Ellipse Canvas.Left="63" Canvas.Top="102" Width="14" Height="12" Fill="#8E2A2A" Stroke="{StaticResource Ink}" StrokeThickness="2" />
+                </Canvas>
             </Canvas>
 
             <!-- Sleep -->

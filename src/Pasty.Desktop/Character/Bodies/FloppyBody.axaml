@@ -1,0 +1,25 @@
+<bodies:CharacterBody xmlns="https://github.com/avaloniaui"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:bodies="using:Pasty.Desktop.Character.Bodies"
+                      x:Class="Pasty.Desktop.Character.Bodies.FloppyBody"
+                      Width="140" Height="184">
+    <!-- Floppy: a 3.5" floppy disk. The face is on its label; the metal shutter is at the bottom. -->
+    <Canvas x:Name="BackLayer" Width="140" Height="184">
+        <Path Data="M 26,42 H 110 L 118,50 V 146 Q 118,150 114,150 H 26 Q 22,150 22,146 V 46 Q 22,42 26,42 Z" Stroke="#14254A" StrokeThickness="2" StrokeJoin="Round">
+            <Path.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Color="#3A5FAA" Offset="0" />
+                    <GradientStop Color="#23397A" Offset="1" />
+                </LinearGradientBrush>
+            </Path.Fill>
+        </Path>
+        <!-- Label -->
+        <Rectangle Canvas.Left="30" Canvas.Top="49" Width="80" Height="72" RadiusX="3" RadiusY="3" Fill="#F8F8F2" Stroke="#C8CCD4" StrokeThickness="1" />
+        <Rectangle Canvas.Left="31" Canvas.Top="50" Width="78" Height="5" Fill="#FF6B57" />
+        <!-- Metal shutter -->
+        <Rectangle Canvas.Left="44" Canvas.Top="128" Width="52" Height="22" Fill="#C9CED6" Stroke="#8E96A3" StrokeThickness="1.2" />
+        <Rectangle Canvas.Left="72" Canvas.Top="132" Width="10" Height="14" RadiusX="1" RadiusY="1" Fill="#6E7682" />
+        <!-- Write-protect notch -->
+        <Rectangle Canvas.Left="28" Canvas.Top="136" Width="7" Height="8" Fill="#14254A" />
+    </Canvas>
+</bodies:CharacterBody>

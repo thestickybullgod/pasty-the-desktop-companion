@@ -12,7 +12,7 @@ public static class HalloweenLines
     public static readonly Line[] HalloweenNight =
     [
         new("Happy Halloween! 🎃 It's also my birthday. I was born on Halloween. Explains a lot, honestly.", 0, PastyReaction.Wave),
-        new("It's Halloween AND my birthday! Pasty has entered the crypt. I mean chat. Mostly chat.", 0, PastyReaction.Wave),
+        new("It's Halloween AND my birthday! {name} has entered the crypt. I mean chat. Mostly chat.", 0, PastyReaction.Wave),
     ];
 
     /// <summary>Said once, at the stroke of midnight between October 31 and November 1.</summary>
@@ -64,10 +64,11 @@ public static class HalloweenLines
         new("Why don't ghosts use Windows? Too many panes. 👻", 0, PastyReaction.Smug),
         new("I'm not saying your desktop is haunted, but I've seen icons move. It was you. You moved them.", 1, PastyReaction.Smug),
         new("Fun fact: bats are the only flying mammals. My bat friend is the only flying mammal who works here.", 0),
-        new("I tried to be a ghost for Halloween, but I'm already pretty pale. Paste joke. Sorry.", 0, PastyReaction.Happy),
+        new("I tried to be a ghost for Halloween, but I'm already pretty pale. Paste joke. Sorry.", 0, PastyReaction.Happy, Characters.Characters.ClassicPastyId),
+        new("I wanted to be a pumpkin for Halloween, but I'm already orange. I went as myself. Nailed it.", 0, PastyReaction.Happy, Characters.Characters.PastyId),
         new("Spooky tip: Win+L locks your PC so no ghosts can use it while you're getting candy.", 0),
         new("What's a ghost's favorite key? Esc-ape. 👻", 0, PastyReaction.Smug),
-        new("This hat cost me a fortune. And by fortune I mean nothing. I'm a tube.", 1),
+        new("This hat cost me a fortune. And by fortune I mean nothing. I'm {kind}.", 1),
         new("Remember: the scariest thing on your PC is a file named final_FINAL_v2_reallyfinal.docx.", 1, PastyReaction.Smug),
         new("I carved a pumpkin. Well, I watched you not carve a pumpkin. Same energy.", 1),
         new("Candy break? I'll guard the desktop. Nothing gets past me. Except everything.", 0),
@@ -77,7 +78,8 @@ public static class HalloweenLines
         new("The hat speaks to me. It says 'more hat'. I'm considering a second hat.", 2, PastyReaction.Smug),
         new("I've decided I'm a vampire. I don't drink blood. I drink clipboard. Copy something. Please. I'm so thirsty.", 2, PastyReaction.Smug),
         new("Legend says if you stare at the Recycle Bin long enough, it stares back. I'd know. I've been staring for hours.", 2),
-        new("Is it weird that I want to be buried in this hat? Not that I'm planning anything. I'm a tube. We last forever.", 2),
+        new("Is it weird that I want to be buried in this hat? Not that I'm planning anything. I'm a tube. We last forever.", 2, Only: Characters.Characters.ClassicPastyId),
+        new("Is it weird that I want to be buried in this hat? Not that I'm planning anything. Just put my cap back on so I don't dry out.", 2, Only: Characters.Characters.PastyId),
     ];
 
     public static readonly Line[] Poke =
@@ -131,7 +133,7 @@ public static class HalloweenLines
     public static readonly Line[] Boo =
     [
         new("BOO! 👻 ...was that scary? Be honest. Actually, don't.", 0, PastyReaction.Ghost),
-        new("Boooo! I'm a ghost now. A very see-through, tube-shaped ghost.", 0, PastyReaction.Ghost),
+        new("Boooo! I'm a ghost now. A very see-through, {noun}-shaped ghost.", 0, PastyReaction.Ghost),
         new("BOO! Okay I scared myself a little.", 0, PastyReaction.Ghost),
         new("Wooooo. I am the ghost of documents unsaved. Press Ctrl+S, mortal. 👻", 1, PastyReaction.Ghost),
     ];

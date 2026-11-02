@@ -1,0 +1,56 @@
+<bodies:CharacterBody xmlns="https://github.com/avaloniaui"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:bodies="using:Pasty.Desktop.Character.Bodies"
+                      x:Class="Pasty.Desktop.Character.Bodies.PastyBody"
+                      Width="140" Height="184">
+    <!-- Pasty: a tube of paste with a screw-cap hat. -->
+    <bodies:CharacterBody.Resources>
+        <StreamGeometry x:Key="BodyGeometry">M 26,162 C 23,122 30,72 44,50 L 56,38 L 84,38 L 96,50 C 110,72 117,122 114,162 Z</StreamGeometry>
+        <StreamGeometry x:Key="BodyClip">M 26,162 C 23,122 30,72 44,50 L 56,38 L 84,38 L 96,50 C 110,72 117,122 114,162 Z</StreamGeometry>
+        <SolidColorBrush x:Key="Outline" Color="#7D8896" />
+    </bodies:CharacterBody.Resources>
+
+    <Canvas x:Name="BackLayer" Width="140" Height="184">
+        <!-- Crimped tube end -->
+        <Rectangle Canvas.Left="21" Canvas.Top="158" Width="98" Height="17" RadiusX="3" RadiusY="3" Fill="#E3E7EC" Stroke="{StaticResource Outline}" StrokeThickness="2" />
+        <Path Stroke="#B4BCC6" StrokeThickness="1.5"
+              Data="M 31,161 V 172 M 41,161 V 172 M 51,161 V 172 M 61,161 V 172 M 71,161 V 172 M 81,161 V 172 M 91,161 V 172 M 101,161 V 172 M 111,161 V 172" />
+
+        <!-- Neck -->
+        <Rectangle Canvas.Left="55" Canvas.Top="30" Width="30" Height="10" Fill="#DDE2E8" Stroke="{StaticResource Outline}" StrokeThickness="1.5" />
+
+        <!-- Body -->
+        <Path Data="{StaticResource BodyGeometry}" Stroke="{StaticResource Outline}" StrokeThickness="2">
+            <Path.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#E9EDF2" Offset="0" />
+                    <GradientStop Color="#FFFFFF" Offset="0.38" />
+                    <GradientStop Color="#F6F8FA" Offset="0.7" />
+                    <GradientStop Color="#D5DBE2" Offset="1" />
+                </LinearGradientBrush>
+            </Path.Fill>
+        </Path>
+
+        <!-- Label band, clipped to the body -->
+        <Canvas Width="140" Height="184" Clip="{StaticResource BodyClip}">
+            <Rectangle x:Name="Band" Canvas.Left="10" Canvas.Top="122" Width="120" Height="28" Fill="#FF6B57" />
+            <Rectangle Canvas.Left="10" Canvas.Top="122" Width="120" Height="3" Fill="#FFFFFF" Opacity="0.35" />
+            <Path x:Name="BandSwirl" Data="M 34,137 q 6,-7 12,0 t 12,0 t 12,0 t 12,0 t 12,0" Stroke="White" StrokeThickness="3" StrokeLineCap="Round" />
+        </Canvas>
+    </Canvas>
+
+    <!-- Screw cap -->
+    <Canvas x:Name="TopLayer" Width="140" Height="184">
+        <Rectangle Canvas.Left="50" Canvas.Top="5" Width="40" Height="28" RadiusX="6" RadiusY="6" Stroke="#0B6B62" StrokeThickness="2">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#2CC5B5" Offset="0" />
+                    <GradientStop Color="#14A99A" Offset="0.5" />
+                    <GradientStop Color="#0E857A" Offset="1" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Path Stroke="#7FE3D8" StrokeThickness="1.5" Opacity="0.8"
+              Data="M 57,9 V 29 M 63,9 V 29 M 69,9 V 29 M 75,9 V 29 M 81,9 V 29" />
+    </Canvas>
+</bodies:CharacterBody>

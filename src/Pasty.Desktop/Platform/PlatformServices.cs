@@ -18,6 +18,7 @@ internal static class PlatformServices
         public IReadOnlyList<string> Limitations { get; } =
             ["This OS isn't fully supported yet: no idle detection, app awareness, eye tracking or start-on-login."];
         public bool SupportsActiveAppAwareness => false;
+        public bool PrefersReducedMotion => false;
         public IStartupRegistration Startup => this;
         public ISecretStore Secrets => this;
         public TimeSpan? GetIdleTime() => null;

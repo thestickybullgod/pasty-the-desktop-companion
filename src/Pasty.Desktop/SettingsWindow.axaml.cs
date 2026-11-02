@@ -4,15 +4,18 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Pasty.Brains.OpenAICompatible;
 using Pasty.Core.Brains;
+using Pasty.Core.Characters;
 using Pasty.Core.Personality;
 using Pasty.Core.Plugins;
 using Pasty.Core.Seasons;
 using Pasty.Core.Settings;
 using Pasty.Desktop.Character;
+using Pasty.Desktop.Services;
 
 namespace Pasty.Desktop;
 
@@ -47,14 +50,27 @@ public partial class SettingsWindow : Window
         DataContext = _draft;
 
         var halloween = companion.Season == Season.Halloween;
-        Portrait.Source = PastyAvatar.RenderPortrait(112, companion.Season);
-        Icon = new WindowIcon(PastyAvatar.RenderPortrait(64, companion.Season));
+        ShowCharacterPortrait();
+        BuildCharacterPicker();
         Subtitle.Text = halloween ? "Desktop companion · 🎃 Halloween Edition" : "Desktop companion";
         StartupTitle.Text = OperatingSystem.IsWindows() ? "Start with Windows" : "Start when I log in";
 
         Bind(SleepChoice, _draft.SleepAfterMinutes, v => _draft.SleepAfterMinutes = (int)v,
             new Choice(0, "Never"), new Choice(5, "After 5 minutes"), new Choice(10, "After 10 minutes"),
             new Choice(20, "After 20 minutes"), new Choice(30, "After 30 minutes"), new Choice(60, "After 1 hour"));
+        var hours = Enumerable.Range(0, 24)
+            .Select(h => new Choice(TimeSpan.FromHours(h), DateTime.Today.AddHours(h).ToString("t"))).ToArray();
+        Bind(QuietStartChoice, _draft.QuietHoursStart, v => _draft.QuietHoursStart = (TimeSpan)v, hours);
+        Bind(QuietEndChoice, _draft.QuietHoursEnd, v => _draft.QuietHoursEnd = (TimeSpan)v, hours);
+        Bind(BreakChoice, _draft.BreakNudgeMinutes, v => _draft.BreakNudgeMinutes = (int)v,
+            new Choice(0, "Off"), new Choice(45, "Every 45 minutes"), new Choice(60, "Every hour"),
+            new Choice(90, "Every 90 minutes"), new Choice(120, "Every 2 hours"));
+        Bind(HotkeyChoice, _draft.AskHotkey, v => _draft.AskHotkey = (string)v,
+            [new Choice("", "Off"), .. GlobalHotkey.Presets.Select(p => new Choice(p, p))]);
+        HotkeyChoice.IsEnabled = OperatingSystem.IsWindows();
+        Bind(MotionChoice, _draft.Motion, v => _draft.Motion = (MotionPreference)v,
+            new Choice(MotionPreference.Auto, "Follow system"), new Choice(MotionPreference.Reduced, "Reduced"),
+            new Choice(MotionPreference.Full, "Full"));
         Bind(ChattinessChoice, _draft.Chattiness, v => _draft.Chattiness = (Chattiness)v,
             new Choice(Chattiness.Quiet, "Quiet: only when asked"), new Choice(Chattiness.Polite, "Polite"),
             new Choice(Chattiness.Chatty, "Chatty"), new Choice(Chattiness.Relentless, "Relentless (1997 mode)"));
@@ -92,7 +108,7 @@ public partial class SettingsWindow : Window
         PlatformInfo.Text = companion.Platform.Name
             + (companion.Platform.Limitations.Count > 0 ? "\n\n• " + string.Join("\n• ", companion.Platform.Limitations) : "\nEverything Pasty can do works here.");
 
-        PreviewButton.Click += (_, _) => PreviewLine.Text = "“" + _preview.IdleRemark().Text + "”";
+        PreviewButton.Click += (_, _) => PreviewLine.Text = "“" + _preview.Character.Format(_preview.IdleRemark().Text) + "”";
         SaveKeyButton.Click += (_, _) => SaveKey();
         ListModelsButton.Click += async (_, _) => await ListModelsAsync();
         ModelBox.TextChanged += (_, _) => UpdateProfile(p => p with { Model = Blank(ModelBox.Text) });
@@ -123,6 +139,38 @@ public partial class SettingsWindow : Window
         LoadProvider();
         UpdateDependentState();
         _loading = false;
+    }
+
+    /// <summary>One tile per character: portrait and name. Choosing one switches the desktop companion right away.</summary>
+    private void BuildCharacterPicker()
+    {
+        var tiles = Characters.All.Select(info =>
+        {
+            var tile = new StackPanel { Width = 92, Spacing = 4, Margin = new Thickness(2, 4) };
+            tile.Children.Add(new Image
+            {
+                Source = PastyAvatar.RenderPortrait(144, _companion.Season, info.Id),
+                Width = 72, Height = 72, HorizontalAlignment = HorizontalAlignment.Center,
+            });
+            tile.Children.Add(new TextBlock { Text = info.Title, HorizontalAlignment = HorizontalAlignment.Center, FontSize = 13 });
+            return new ListBoxItem { Content = tile, Tag = info.Id, Padding = new Thickness(4), CornerRadius = new CornerRadius(6) };
+        }).ToList();
+
+        CharacterPicker.ItemsSource = tiles;
+        CharacterPicker.SelectedItem = tiles.FirstOrDefault(t => (string)t.Tag! == Characters.Get(_draft.Character).Id);
+        CharacterPicker.SelectionChanged += (_, _) =>
+        {
+            if (CharacterPicker.SelectedItem is not ListBoxItem { Tag: string id } || id == _draft.Character) return;
+            _draft.Character = id;
+            ShowCharacterPortrait();
+            QueueApply();
+        };
+    }
+
+    private void ShowCharacterPortrait()
+    {
+        Portrait.Source = PastyAvatar.RenderPortrait(112, _companion.Season, _draft.Character);
+        Icon = new WindowIcon(PastyAvatar.RenderPortrait(64, _companion.Season, _draft.Character));
     }
 
     private void Bind(ComboBox box, object current, Action<object> set, params Choice[] choices)
@@ -172,6 +220,13 @@ public partial class SettingsWindow : Window
         AwarenessStatus.Text = running.Count == 0
             ? "Pasty isn't observing anything. It's just vibing."
             : "Pasty currently notices:\n• " + string.Join("\n• ", running);
+
+        HotkeyStatus.Text = !OperatingSystem.IsWindows()
+            ? "Global shortcuts are Windows-only for now. Bind \"pasty\" to a key in your desktop's keyboard settings instead."
+            : _companion.HotkeyProblem
+                ?? (string.IsNullOrEmpty(_draft.AskHotkey) ? "Off." : $"Press {_draft.AskHotkey} from any app to ask {_companion.Character.Name} something.");
+        MotionStatus.Text = "Calmer animation: no bobbing, hopping or bats, and messages appear all at once. "
+            + (_companion.ReducedMotion ? "Reduced motion is on." : "Full motion is on.");
     }
 
     private void ShowPage()

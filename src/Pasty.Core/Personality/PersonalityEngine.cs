@@ -1,3 +1,4 @@
+using Pasty.Core.Characters;
 using Pasty.Core.Context;
 using Pasty.Core.Seasons;
 using Pasty.Core.Settings;
@@ -15,6 +16,7 @@ public sealed class PersonalityEngine
     private readonly Dictionary<string, ShuffleBag<Line>> _bags = [];
     private readonly Dictionary<string, DateTime> _cooldowns = [];
     private int _spiceCap = -1;
+    private string? _bagCharacter;
     private int _recentPokes;
     private DateTime _lastPoke;
 
@@ -26,6 +28,9 @@ public sealed class PersonalityEngine
     }
 
     public PastySettings Settings { get; set; }
+
+    /// <summary>The selected companion; its name and nature fill the lines' placeholders.</summary>
+    public CharacterInfo Character => Characters.Characters.Get(Settings.Character);
 
     /// <summary>How long to wait between unprompted idle remarks, or null to never volunteer one.</summary>
     public TimeSpan? IdleInterval => Settings.Chattiness switch
@@ -74,7 +79,14 @@ public sealed class PersonalityEngine
     /// <summary>The current seasonal costume, from the date and the user's seasonal setting.</summary>
     public Season Season => SeasonCalendar.For(_now(), Settings.Seasonal);
 
-    public Utterance IdleRemark() => Seasonal("idle", Lines.Idle, HalloweenLines.Idle, 0.6);
+    public Utterance IdleRemark()
+    {
+        // Now and then, a line only the current character would say.
+        var signature = Character.Signature;
+        if (signature.Length > 0 && _random.NextDouble() < 0.3)
+            return Say("signature-" + Character.Id, signature);
+        return Seasonal("idle", Lines.Idle, HalloweenLines.Idle, 0.6);
+    }
 
     public Utterance WakeUp() => Seasonal("wake", Lines.WakeUp, HalloweenLines.WakeUp, 0.6);
 
@@ -115,6 +127,32 @@ public sealed class PersonalityEngine
         : Say("treat", HalloweenLines.Treats);
 
     public Utterance OfflineFallback() => Say("offline", Lines.OfflineFallback);
+
+    /// <summary>A gentle nudge to take a break after <paramref name="active"/> of continuous activity.</summary>
+    public Utterance BreakNudge(TimeSpan active)
+    {
+        var line = Say("break", Lines.BreakNudges);
+        return line with { Text = line.Text.Replace("{duration}", Describe(active)) };
+    }
+
+    /// <summary>A due reminder, in the character's voice.</summary>
+    public Utterance ReminderDue(string text)
+    {
+        var line = Say("reminder", Lines.ReminderDue);
+        return line with { Text = line.Text.Replace("{text}", text) };
+    }
+
+    private static string Describe(TimeSpan span)
+    {
+        var minutes = (int)Math.Round(span.TotalMinutes / 15) * 15;
+        return minutes switch
+        {
+            < 60 => $"{Math.Max(1, (int)span.TotalMinutes)} minutes",
+            60 => "an hour",
+            _ when minutes % 60 == 0 => $"{minutes / 60} hours",
+            _ => $"{minutes} minutes",
+        };
+    }
 
     public Utterance Poked()
     {
@@ -173,21 +211,25 @@ public sealed class PersonalityEngine
 
     private Utterance Say(string bagKey, Line[] lines)
     {
-        if (_spiceCap != SpiceCap)
+        var character = Character;
+        if (_spiceCap != SpiceCap || _bagCharacter != character.Id)
         {
-            // Sarcasm changed: rebuild every bag against the new filter.
+            // Sarcasm or character changed: rebuild every bag against the new filter.
             _bags.Clear();
             _spiceCap = SpiceCap;
+            _bagCharacter = character.Id;
         }
 
         if (!_bags.TryGetValue(bagKey, out var bag))
         {
-            var allowed = lines.Where(l => l.Spice <= _spiceCap).ToArray();
-            bag = new ShuffleBag<Line>(allowed.Length > 0 ? allowed : [lines.MinBy(l => l.Spice)!], _random);
+            var forCharacter = lines.Where(l => l.Only is null || l.Only == character.Id).ToArray();
+            if (forCharacter.Length == 0) forCharacter = lines;
+            var allowed = forCharacter.Where(l => l.Spice <= _spiceCap).ToArray();
+            bag = new ShuffleBag<Line>(allowed.Length > 0 ? allowed : [forCharacter.MinBy(l => l.Spice)!], _random);
             _bags[bagKey] = bag;
         }
 
         var line = bag.Next();
-        return new Utterance(line.Text, line.Reaction);
+        return new Utterance(character.Format(line.Text), line.Reaction);
     }
 }

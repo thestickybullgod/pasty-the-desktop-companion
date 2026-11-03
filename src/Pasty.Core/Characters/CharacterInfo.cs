@@ -118,6 +118,15 @@ public static class Characters
                 new("Warming up… warming up… okay, ready. Honestly, warming up is the best part.", 0, PastyReaction.Happy),
             ]),
 
+        new("posty", "Posty", "envelope", "envelopes", "an airmail envelope",
+            "an eager airmail envelope with a red stamp and an open flap, who treats every message as special delivery " +
+            "and is quietly proud of being the original email",
+            [
+                new("Special delivery! It's me. I'm the delivery.", 0, PastyReaction.Happy),
+                new("Fun fact: I'm the original email. Same idea, more paper cuts.", 1, PastyReaction.Smug),
+                new("Return to sender? Never. I always find my way back to your desktop.", 1, PastyReaction.Smug),
+            ]),
+
         new("potato", "Potato", "potato", "potatoes", "a potato",
             "a cozy, slightly lazy potato with sprouts on top, who jokes that a slow computer is 'running on a potato' because that's literally it",
             [

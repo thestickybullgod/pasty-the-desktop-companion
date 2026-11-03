@@ -12,7 +12,7 @@ public class CharacterTests
     [Fact]
     public void Catalog_has_the_companions_with_pasty_first()
     {
-        Assert.Equal(["pasty", "pasty-classic", "gluey", "brick", "sticky", "floppy", "mugsy", "hilite", "coppie", "potato"], Characters.Characters.All.Select(c => c.Id));
+        Assert.Equal(["pasty", "pasty-classic", "gluey", "brick", "sticky", "floppy", "mugsy", "hilite", "coppie", "posty", "potato"], Characters.Characters.All.Select(c => c.Id));
         Assert.Equal("pasty", Characters.Characters.Default.Id);
         Assert.Equal(Characters.Characters.All.Count, Characters.Characters.All.Select(c => c.Id).Distinct().Count());
         Assert.All(Characters.Characters.All, c =>

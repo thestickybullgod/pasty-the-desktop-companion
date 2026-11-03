@@ -1,0 +1,57 @@
+<bodies:CharacterBody xmlns="https://github.com/avaloniaui"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:bodies="using:Pasty.Desktop.Character.Bodies"
+                      x:Class="Pasty.Desktop.Character.Bodies.PostyBody"
+                      Width="140" Height="184">
+    <!-- Posty: an airmail envelope. The open flap is the topper; a letter peeks out when it flips. -->
+    <bodies:CharacterBody.Resources>
+        <SolidColorBrush x:Key="Ink" Color="#2B3442" />
+        <StreamGeometry x:Key="Envelope">M 28,52 H 112 Q 118,52 118,58 V 156 Q 118,162 112,162 H 28 Q 22,162 22,156 V 58 Q 22,52 28,52 Z</StreamGeometry>
+    </bodies:CharacterBody.Resources>
+
+    <Canvas x:Name="BackLayer" Width="140" Height="184">
+        <!-- The letter inside, hidden by the flap until it flips -->
+        <Rectangle Canvas.Left="34" Canvas.Top="30" Width="72" Height="30" RadiusX="2" RadiusY="2" Fill="#FFFFFF" Stroke="#8A93A0" StrokeThickness="1.4" />
+        <Path Stroke="#9AA3AF" StrokeThickness="1.6" StrokeLineCap="Round" Data="M 42,38 H 92 M 42,43 H 84 M 42,48 H 88" />
+
+        <!-- Envelope -->
+        <Path Data="{StaticResource Envelope}" Stroke="{StaticResource Ink}" StrokeThickness="2.5">
+            <Path.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#EFE9DA" Offset="0" />
+                    <GradientStop Color="#FFFDF6" Offset="0.3" />
+                    <GradientStop Color="#FBF7EC" Offset="0.65" />
+                    <GradientStop Color="#E2DACA" Offset="1" />
+                </LinearGradientBrush>
+            </Path.Fill>
+        </Path>
+
+        <Canvas Width="140" Height="184" Clip="{StaticResource Envelope}">
+            <!-- Airmail stripes along the bottom -->
+            <Path Fill="#E5484D" Data="M 20,162 l 5,-7 h 8 l -5,7 Z M 52,162 l 5,-7 h 8 l -5,7 Z M 84,162 l 5,-7 h 8 l -5,7 Z M 116,162 l 5,-7 h 8 l -5,7 Z" />
+            <Path Fill="#2F5DA8" Data="M 36,162 l 5,-7 h 8 l -5,7 Z M 68,162 l 5,-7 h 8 l -5,7 Z M 100,162 l 5,-7 h 8 l -5,7 Z" />
+            <!-- Soft shading -->
+            <Rectangle Canvas.Left="27" Canvas.Top="58" Width="4" Height="88" RadiusX="2" RadiusY="2" Fill="#FFFFFF" Opacity="0.85" />
+        </Canvas>
+
+        <!-- Address lines -->
+        <Path Stroke="#8F98A5" StrokeThickness="1.8" StrokeLineCap="Round" Data="M 50,133 H 90 M 50,139 H 84 M 50,145 H 88" />
+
+        <!-- Stamp -->
+        <Rectangle x:Name="Stamp" Canvas.Left="100" Canvas.Top="58" Width="14" Height="17" Fill="#FF6B57" Stroke="#FFFFFF" StrokeThickness="2" StrokeDashArray="1,0.8" />
+        <Path x:Name="StampMark" Data="M 107,71 C 103,68 102,65 104.5,64 C 106,63.5 107,65 107,65 C 107,65 108,63.5 109.5,64 C 112,65 111,68 107,71 Z" Fill="#FFFFFF" />
+    </Canvas>
+
+    <!-- The open flap -->
+    <Canvas x:Name="TopLayer" Width="140" Height="184">
+        <Path Data="M 24,54 L 66,18 Q 70,15 74,18 L 116,54 Z" Stroke="{StaticResource Ink}" StrokeThickness="2.5" StrokeJoin="Round">
+            <Path.Fill>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Color="#FBF7EC" Offset="0" />
+                    <GradientStop Color="#E6DECD" Offset="1" />
+                </LinearGradientBrush>
+            </Path.Fill>
+        </Path>
+        <Path Data="M 40,47 L 68,24" Stroke="#FFFFFF" StrokeThickness="2.2" StrokeLineCap="Round" Opacity="0.8" />
+    </Canvas>
+</bodies:CharacterBody>

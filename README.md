@@ -19,7 +19,8 @@ character assets are used or redistributed.
 - 🖱️ **Lives on your desktop**: always on top, drag it anywhere, and it remembers where you left it.
 - 💬 **Speech bubbles**, with a typewriter effect and an ask box (double-click Pasty).
 - 🎭 **Pick your companion**: Pasty (a school-glue bottle), Classic Pasty (the original tube), Gluey (a glue
-  stick), Coppie (a little copier), Brick (a 90s brick phone), Sticky, Floppy, Mugsy, Hilite or Potato.
+  stick), Coppie (a little copier), Posty (an airmail envelope), Brick (a 90s brick phone), Sticky, Floppy,
+  Mugsy, Hilite or Potato.
 - 🎞️ **Animated**: idle, listening, thinking, talking, sleeping, plus reactions (pokes, hops, waves, smugness).
   Eyes follow your cursor, and the eyebrows do a lot of the acting.
 - 🪟 **Windows 11-style settings**: Fluent design, light and dark mode, applies changes instantly.

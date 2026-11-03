@@ -172,6 +172,26 @@ public partial class CoppieBody : CharacterBody
     }
 }
 
+/// <summary>Posty: an airmail envelope. At Halloween the stamp turns orange and purple.</summary>
+public partial class PostyBody : CharacterBody
+{
+    public PostyBody() => InitializeComponent();
+    public override Control Back => BackLayer;
+    public override Control? Topper => TopLayer;
+    public override double ArmInset => -4;     // a wide body: arms start at its edges
+    public override double FaceOffsetY => 6;   // below the flap's hinge
+    public override double BrowHeadroom => 8;
+    public override double HatDrop => 22;
+    public override double PortraitTop => 18;
+
+    public override void ApplySeason(Pasty.Core.Seasons.Season season)
+    {
+        var halloween = season == Pasty.Core.Seasons.Season.Halloween;
+        Stamp.Fill = new SolidColorBrush(Color.Parse(halloween ? "#3A2356" : "#FF6B57"));
+        StampMark.Fill = new SolidColorBrush(Color.Parse(halloween ? "#FF9F1C" : "#FFFFFF"));
+    }
+}
+
 /// <summary>Maps character ids (Pasty.Core.Characters) to their bodies.</summary>
 public static class BodyCatalog
 {
@@ -186,6 +206,7 @@ public static class BodyCatalog
         "pasty-classic" => new ClassicPastyBody(),
         "gluey" => new GlueyBody(),
         "coppie" => new CoppieBody(),
+        "posty" => new PostyBody(),
         _ => new PastyBody(),
     };
 }

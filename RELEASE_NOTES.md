@@ -1,3 +1,13 @@
+# Pasty the Desktop Companion 1.3.1
+
+**Posty has entered the chat.**
+
+- **Posty** joins the cast: an airmail envelope with a red stamp and a striped border. His open flap flips back
+  when he waves, showing the letter inside, and at Halloween his stamp turns purple with an orange heart. He treats
+  every message as special delivery. Eleven companions in all.
+- Updated "Pick your companion" Store screenshot.
+
+---
 # Pasty the Desktop Companion 1.3.0
 
 **Pasty, redesigned. And two new friends.**

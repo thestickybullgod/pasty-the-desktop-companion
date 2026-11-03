@@ -58,18 +58,18 @@ files, cursor or screen. It respects Snooze, Quiet mode and full-screen hiding, 
 ## Install
 
 ### Windows 10 / 11
-Download `Pasty-1.3.0-win-x64.zip` (or `win-arm64`), extract anywhere, run `Pasty.exe`.
+Download `Pasty-1.3.1-win-x64.zip` (or `win-arm64`), extract anywhere, run `Pasty.exe`.
 No installer and no admin rights needed. Turn on *Start with Windows* in Settings if you'd like.
 
 ### Linux (experimental)
 Pasty is made for Windows. The Linux build is **experimental**: it's provided as-is, gets fixes when they're
 simple, and isn't tested across distributions. Bug reports and pull requests are welcome.
 
-Download `Pasty-1.3.0-linux-x64.tar.gz` (or `linux-arm64`), then:
+Download `Pasty-1.3.1-linux-x64.tar.gz` (or `linux-arm64`), then:
 
 ```sh
-tar -xzf Pasty-1.3.0-linux-x64.tar.gz
-cd Pasty-1.3.0-linux-x64
+tar -xzf Pasty-1.3.1-linux-x64.tar.gz
+cd Pasty-1.3.1-linux-x64
 sh install.sh           # per-user install, no root; sh install.sh --uninstall to remove
 ```
 

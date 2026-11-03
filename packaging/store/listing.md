@@ -14,7 +14,7 @@ Pasty is a bottle of school glue with a pointy orange cap, very expressive eyebr
 ## Description [up to 10,000 characters]
 Remember the desktop assistants of the 90s? Pasty is what might have happened if one of them had survived into the modern era: helpful, nostalgic, slightly obnoxious, technically competent, and occasionally sarcastic.
 
-Pasty is an original character: a bottle of school glue with a pointy orange cap and eyebrows that do a lot of the talking. It lives on your desktop, always on top, wherever you drag it. Prefer a different look? Pick one of ten companions, from Classic Pasty (the original tube of paste) and Gluey the glue stick to Coppie the little copier, Brick the 90s brick phone, or Potato.
+Pasty is an original character: a bottle of school glue with a pointy orange cap and eyebrows that do a lot of the talking. It lives on your desktop, always on top, wherever you drag it. Prefer a different look? Pick one of eleven companions, from Classic Pasty (the original tube of paste) and Gluey the glue stick to Coppie the little copier, Posty the airmail envelope, Brick the 90s brick phone, or Potato.
 
 WHAT PASTY DOES
 • Hangs out on your desktop with idle, listening, thinking and talking animations, and its eyes follow your cursor
@@ -43,7 +43,7 @@ FREE AND OPEN SOURCE
 Pasty is free software under the GNU GPL v3 or later. Source code: https://github.com/thestickybullgod/pasty-the-desktop-companion
 
 ## What's new in this version
-Pasty, redesigned: he's now a bottle of school glue with a pointy orange cap. Two new friends join him: Gluey the glue stick and Coppie the little copier, for ten companions in all. And the eyebrows do much more acting: bigger expressions, a quick eyebrow flash when you ask something, and the occasional knowing raised brow.
+Special delivery: Posty the airmail envelope joins the cast, for eleven companions in all. His flap flips open when he waves. Also recent: Pasty's redesign as a bottle of school glue with a pointy orange cap, new friends Gluey the glue stick and Coppie the little copier, and much more expressive eyebrows.
 
 ## Product features [up to 20, 200 characters each]
 1. An original animated desktop companion that lives on top of your other windows
@@ -57,7 +57,7 @@ Pasty, redesigned: he's now a bottle of school glue with a pointy orange cap. Tw
 9. Optional Start with Windows
 10. Halloween Edition with a witch hat, a bat friend and ghost mode
 11. Free and open source (GPL-3.0-or-later)
-12. Pick your companion: Pasty, Classic Pasty, Gluey, Coppie, Brick, Sticky, Floppy, Mugsy, Hilite or Potato
+12. Pick your companion: Pasty, Classic Pasty, Gluey, Coppie, Posty, Brick, Sticky, Floppy, Mugsy, Hilite or Potato
 13. Reminders, break nudges and quiet hours
 14. Ask from any app with Ctrl+Alt+P
 15. Reduced motion that follows your Windows animation setting
@@ -67,7 +67,7 @@ Pasty, redesigned: he's now a bottle of school glue with a pointy orange cap. Tw
 2. `2-bring-your-own-brain.png`: Use Pasty's offline personality, or connect an AI brain of your choice.
 3. `3-private-by-design.png`: Private by design: Pasty collects nothing.
 4. `4-halloween-edition.png`: The Halloween Edition: Pasty was born on Halloween 2026.
-5. `5-pick-your-companion.png`: Pick your companion: ten looks, one personality.
+5. `5-pick-your-companion.png`: Pick your companion: eleven looks, one personality.
 
 ## Search terms [up to 7]
 1. desktop companion

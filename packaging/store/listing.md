@@ -96,7 +96,10 @@ Planet Archives
 https://github.com/thestickybullgod/pasty-the-desktop-companion/blob/main/PRIVACY.md
 
 ## Website
-https://github.com/thestickybullgod/pasty-the-desktop-companion
+https://www.planetarchives.org/pasty.html
+
+(All lowercase: the server is case-sensitive, and `Pasty.html` with a capital P returns 404. Certification
+rejected a submission over that, policy 10.1.2.7.)
 
 ## Support contact info
 support@planetarchives.org
